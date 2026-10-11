@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api//+pqwl1F0bcWXAaKBW1fTnBQ/R0</id>
+  <title>arXiv Query: search_query=cat:cs.CL AND all:"retrieval augmented"&amp;id_list=&amp;start=0&amp;max_results=3</title>
+  <updated>2026-10-11T13:52:39Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=cat:cs.CL+AND+all:%22retrieval+augmented%22&amp;start=0&amp;max_results=3&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>3</opensearch:itemsPerPage>
+  <opensearch:totalResults>3909</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2610.11899v1</id>
+    <title>Forms of LLM-Integrated Applications from LLM-Chats to Autonomous AI Agent System</title>
+    <updated>2026-10-08T13:05:33Z</updated>
+    <link href="https://arxiv.org/abs/2610.11899v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.11899v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models (LLMs) are increasingly embedded as components in software systems, marketed under labels such as chatbot, copilot, retrieval-augmented generation, workflow, coding agent and AI agent. Whether these labels denote genuine architectural forms or serve as branding has not been assessed systematically.
+  In the sources surveyed, labels do carry architectural content, most clearly in vendor usage: copilot denotes a router-worker architecture operating a host application under step-by-step user confirmation, while the more recent shift to the label agent coincides with AI-planned multi-step execution of which the user sees only the outcome. The coding agents of four major providers share one architecture, a reason-and-act loop delegating to subagents.
+  This survey describes seven recurring forms---LLM chats, custom agents, retrieval-augmented generation (RAG), AI-enhanced workflows, copilots, coding agents, and, in part, agentic RAG---in a common vocabulary of agents and tools. Each is characterized along four structural dimensions (agentic RAG only partially): the architectural pattern, the control of execution and the point of user intervention, the number of agent calls per task, and tool use. An illustrative corpus of 22 systems from research publications and vendor documentation grounds the descriptions and shows where they reach their limit.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-08T13:05:33Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Irene Weber</name>
+      <arxiv:affiliation>University of Applied Sciences Kempten, Germany</arxiv:affiliation>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.11371v1</id>
+    <title>SignRAG: Unified Retrieval-Augmented Gloss-Free Sign Language Translation</title>
+    <updated>2026-10-08T07:03:24Z</updated>
+    <link href="https://arxiv.org/abs/2610.11371v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.11371v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Contemporary decoder-only large language models (LLMs) have demonstrated strong capabilities across a wide range of domains. However, existing pretraining paradigms for gloss-free sign language translation (SLT) are largely designed around conventional encoder-decoder pretrained language models, which limits their direct applicability to decoder-only LLMs. To address this limitation, we propose SignRAG, a unified framework combining hierarchical pretraining, target-domain retrieval augmentation, and retrieval-aware reinforcement fine-tuning. Hierarchical pretraining first learns linguistically grounded sign representations and then jointly aligns the sign encoder with an LLM, mitigating cross-modal optimization imbalance. For downstream adaptation, SignRAG complements parameter-based fine-tuning with a target-domain retrieval gallery that provides instance-specific translation cues. To ensure that retrieved contexts are used appropriately, we further introduce Retrieval Utility-Guided Reinforcement Fine-Tuning (RUG-RFT), which combines translation-quality and retrieval-utility rewards to encourage beneficial retrieval use while suppressing harmful reliance. Experiments on multiple SLT benchmarks establish new state-of-the-art performance. In particular, to the best of our knowledge, SignRAG is the first gloss-free approach to outperform gloss-supervised methods across all reported metrics on CSL-Daily. Our code has been released at \href{https://github.com/shahelaojieraozhi/SignRAG}{GitHub}, together with models of different sizes to support future academic research.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MM" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-08T07:03:24Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Zhi Rao</name>
+    </author>
+    <author>
+      <name>Yucheng Zhou</name>
+    </author>
+    <author>
+      <name>Qianran Sun</name>
+    </author>
+    <author>
+      <name>Yiqing Huang</name>
+    </author>
+    <author>
+      <name>Longcan Yuan</name>
+    </author>
+    <author>
+      <name>Jiayi Hou</name>
+    </author>
+    <author>
+      <name>Chengwen Yao</name>
+    </author>
+    <author>
+      <name>Lin Cheng</name>
+    </author>
+    <author>
+      <name>Donghui Sun</name>
+    </author>
+    <author>
+      <name>Xiaoxin Chen</name>
+    </author>
+    <author>
+      <name>Jun Wan</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.11314v1</id>
+    <title>From Retrieval to Reconstruction: Constructing Evolvable Cognitive Memory for Long-Term Dialogue</title>
+    <updated>2026-10-08T06:21:45Z</updated>
+    <link href="https://arxiv.org/abs/2610.11314v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.11314v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Models (LLMs) serving as long-term dialogue agents require memory systems that support reliable reasoning over extended interactions. However, existing Retrieval-Augmented Generation (RAG) frameworks typically treat memory as passive storage, making it difficult to distinguish source-attributed beliefs from unattributed event/fact records and to connect evidence dispersed across sessions. We introduce CogMem, a cognitive memory architecture based on the PEC$^2$F (Person-Event-Concept-Claim-Fact) graph schema. Dedicated Claim nodes preserve the source and target of subjective statements, while Fact and Event nodes represent semantic and episodic knowledge. Dialogue turns are incrementally converted into provenance-aware graph records, consolidated into higher-level facts, and reconciled into temporally scoped Claim views when the same source provides conflicting updates. For retrieval, a rule-based controller driven by LLM intent parsing composes four deterministic graph operators---anchoring, traversal, intersection, and evidence grounding---to reconstruct query-relevant context. Experiments on LoCoMo and LongMemEval show strong performance, especially on multi-hop, temporal, and knowledge-update tasks. Ablations and a semantic-collapse probe support complementary contributions from epistemic separation, consolidation, and agentic retrieval. Code: https://github.com/Silent-Rain02/CogMem.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-08T06:21:45Z</published>
+    <arxiv:comment>Accepted to EMNLP 2026 (main conference). 21 pages</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Zirui Liao</name>
+    </author>
+    <author>
+      <name>Zhengxian Wu</name>
+    </author>
+    <author>
+      <name>Zhuohong Chen</name>
+    </author>
+    <author>
+      <name>Yunyao Yu</name>
+    </author>
+    <author>
+      <name>Xiaoyu Liu</name>
+    </author>
+    <author>
+      <name>Yifan Xu</name>
+    </author>
+    <author>
+      <name>Haoqian Wang</name>
+    </author>
+  </entry>
+</feed>

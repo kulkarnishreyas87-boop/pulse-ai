@@ -1,0 +1,9 @@
+# Never upload local secrets or caches to Vercel
+.env
+.env.local
+.env.*.local
+.cache
+.claude
+.next
+node_modules
+*.tsbuildinfo

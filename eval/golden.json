@@ -1,0 +1,805 @@
+{
+  "week": "2026-W40",
+  "labels": [
+    {
+      "id": "2609.37686",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "EngiWorld: What Can Frontier Agents Deliver in Professional Engineering Environments?",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.39903",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "OSWorld-Science: A Benchmark of Computer Use Agents for Learning and Using Scientific Software",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.01509",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Sharpening Tax in Post-Training",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.00972",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "VeriHarness: Scaling Agentic Verification for Long-Horizon Tasks",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.39788",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Safety of Latent Communication in Multi-Agent Systems",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.38008",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "HybridCUA: Learning to Orchestrate GUI and CLI for Computer-Use Agents",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.39050",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Covert Assistance: Helpful LLM Agents Evade Oversight in Multi-Agent Systems",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.38288",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "AREX-2: Advancing Self-Improving Agents through Long-Horizon Reflective Tasks",
+      "pipelineSaid": "dropped: quality 3.38 < 3.4"
+    },
+    {
+      "id": "2610.02320",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "DeskForge: Dense Supervision from Desktop Environments for Computer-Use Agents",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.36887",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "WEFT: Scaling Tool-Use Post-Training for General-Purpose Agents",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.02206",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "KaliBench: A Fine-Grained Benchmark for Cybersecurity Tool Use on Kali Linux with Runtime-Free Verifiable Rewards",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.39045",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "RSIGame: Autonomous Agentic Game Development with Recursive Self-improvement",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.37226",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Follow the Entities: A Corpus Map for Agentic Search",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2609.36308",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "CheatBench: Measuring Reward Gaming in AI Agents",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.38445",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "AIM: Agentic Idea Management for Automated Research",
+      "pipelineSaid": "dropped: quality 3.13 < 3.4"
+    },
+    {
+      "id": "2609.32259",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Prefill-Free Cross-Family KV Cache Transfer for Heterogeneous Multi-Agent LLMs",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.39378",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "EgoTools: Towards Tool-Centric Reasoning in Real-World Egocentric Videos",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.36201",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "SCOUT: Synergizing Reasoning and Tool-Use for Computer-Use Safety",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.03010",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Engineering Sustainable Agents: A Systematic Comparison of Agentic LLMs for Developer Workflows",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.38660",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Breaking Babel: A Self-Evolving Multi-Agent System for Long-Form Subtitle Translation",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.00437",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "JevSpawn: Adaptive Agentic Inference through Compositional Action Spaces",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2610.02480",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "MEA: A Reward-Driven Multi-Agent System for Faithful Model Explanations",
+      "pipelineSaid": "dropped: quality 3.13 < 3.4"
+    },
+    {
+      "id": "2609.38334",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "EVOKE: Eliciting World Knowledge in Agents for Transferable Decision-Making",
+      "pipelineSaid": "dropped: quality 2.38 < 3.4"
+    },
+    {
+      "id": "2610.04168",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "Agentic Cognitive Depth: Operational Criteria for Evaluating LLM Agents",
+      "pipelineSaid": "dropped: quality 2.88 < 3.4"
+    },
+    {
+      "id": "2610.06971",
+      "domain": "agents",
+      "label": "neutral",
+      "note": "",
+      "title": "AegisFlow: A Multi-Agent Agentic AI Framework for Autonomous Remediation and Self-Healing in Fragile Data Ecosystems",
+      "pipelineSaid": "dropped: quality 2.25 < 3.4"
+    },
+    {
+      "id": "2609.34227",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "When Does Selection Replace Extraction? A Pre-Registered Test of Agent Memory with a Typed Decision Model",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.03632",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "World Embedding Benchmark",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.04691",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "RAGStress: A controlled benchmark for evaluating retrieval-augmented generation under knowledge-base degradation",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.38807",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "PatchHolmes: Agentic Patch Retrieval via Listwise Selection",
+      "pipelineSaid": "dropped: quality 3.38 < 3.4"
+    },
+    {
+      "id": "2609.36700",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Lost in Conversation or Lost in Translation? Diagnosing Multi-Turn Degradation in RAG",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.01218",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "AGO AI Quality Gate: Evidence-First Release Decisions for Retrieval-Augmented Generation",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.38473",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Re-ranking and Late Interaction Drive Retrieval Quality: A Controlled Comparison of RAG Strategies for Scientific Question Answering",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.05034",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Agentic RAG Evaluation: Budget Allocation Across Questions, Trajectories, and Reads",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.37669",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Retrieve, Reproduce, Reveal: Dissecting Retrieval-Augmented Software Vulnerability Detection",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.04109",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "SEER: Self-Evolving Event Reasoning and Retrieval for Time Series Forecasting",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.38024",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Retrieval-Augmented Skill Optimization via Cross-Harness Adaptation",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2609.37349",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "TAEC: Trajectory-Aware Evidence Coordination for Multi-Step Visual RAG",
+      "pipelineSaid": "dropped: quality 3.38 < 3.4"
+    },
+    {
+      "id": "2610.01324",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Evaluating Biomedical Reranking for LLM-Based Question Answering over Longitudinal Clinical Notes",
+      "pipelineSaid": "dropped: quality 3.25 < 3.4"
+    },
+    {
+      "id": "2610.03421",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "CLIMB: Confidence-Guided Complementary Evidence for Multimodal Retrieval-Augmented Generation",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.02542",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "How To Train Your World Model: Fine-tuning vs RAG for LM-based World Modeling",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.34127",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "STITCH-RAG: Spatio-Temporal Influence Tracing over Topic Hypergraphs for Multi-Hop Retrieval-Augmented Generation",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2609.37661",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Corpus-Guided Dual-Path Propagation for Graph Retrieval-Augmented Generation",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2610.01767",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "A Matryoshka Hierarchical RAG for Efficient Multi-Hop Question Answering",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2609.34776",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Page-Aware Retrieval-Augmented Generation for EvalLLM 2026: A Five-Variant Study on French PDFs",
+      "pipelineSaid": "dropped: quality 2.88 < 3.4"
+    },
+    {
+      "id": "2610.02510",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "On-Premises Multi-Course RAG Tutoring for Business Education: Hardware-Software Trade-offs in a Campus AI Tutor",
+      "pipelineSaid": "dropped: quality 2.88 < 3.4"
+    },
+    {
+      "id": "2610.03136",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Investigating the Role of Reasoning-Language Alignment in Monolingual Retrieval-Augmented Generation",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.34677",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Learning What to Recall: Adaptive Multi-Cue Episodic Memory for World Models",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.03948",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Retrieval-Augmented Large Language Model Decision-Making for Autonomous Driving Guided by Chinese Philosophical Wisdom",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.04974",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "IREA: Intermediate Representation-based Embedding Alignment for Normative RAG",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.01936",
+      "domain": "rag",
+      "label": "neutral",
+      "note": "",
+      "title": "Rethinking Knowledge Retrieval for Generation: A Survey on RAG Architectures and Applications",
+      "pipelineSaid": "dropped: quality 1.88 < 3.4"
+    },
+    {
+      "id": "2609.35954",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "ROSS: Relearning from Self-Generated Rollouts through Selective Supervision",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.40285",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "PivotOPD: Learning to Recover from Pivotal Mistakes in Multi-Turn Agents",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.04371",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Functionally Equivalent or Not? Graph-Grounded Differential Surrogate Execution for Code Equivalence",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.35760",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "TokenCast: Forecasting Token Consumption During LLM Agent Execution",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.01108",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "AgSpec: Pushing the Limits of Retrieval-Based Speculative Decoding in Coding Agent Pipelines",
+      "pipelineSaid": "dropped: quality 3.25 < 3.4"
+    },
+    {
+      "id": "2609.36807",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "XRepoSkill: Learning Transferable Skills for Software Engineering Agents",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.36371",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "LatentSift: Policy-State Filtering for Token-Efficient Verification of Software Engineering Agents",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.38987",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Smaller Models, Better Rejects: Preference Distillation Scaling",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2610.04837",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "CARET: Training-Free Test-Time Scaling for Repository-Level Code Completion",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2610.03237",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Pinning Decisions Before Failure: Executable Records of Underspecified Choices in AI-Assisted Code Generation",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.36820",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "CorrGRPO: Correlation-Normalized GRPO for Multi-Reward Learning",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.05380",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "VHDL-REPOBENCH: A Repository-Level Benchmark for Evaluating Large Language Models on VHDL Design Generation",
+      "pipelineSaid": "dropped: quality 3.38 < 3.4"
+    },
+    {
+      "id": "2610.03715",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "4DCodeBench: Benchmarking Agents on Inverse Graphics of Dynamic Scenes",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.39420",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "QuantCode Model: Specializing Language Models for Executable Algorithmic Trading Code",
+      "pipelineSaid": "dropped: quality 2.63 < 3.4"
+    },
+    {
+      "id": "2610.01769",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "CONTRA: Discovering and Qualifying Behavior-Changing Questions for Selective Clarification in LLM Code Generation",
+      "pipelineSaid": "dropped: quality 3.25 < 3.4"
+    },
+    {
+      "id": "2609.36931",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Dating the Model: Hidden Dates in System Prompts Affect LLM Evaluation",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.35913",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "UNBIND: UNlearning By INference-time Directional Steering for Code LLMs",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.36159",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Principled Thoughts for Latent Recursive LLM Systems",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.05170",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Verification Trap: Understanding Test-Time Selection Failures under False Premises in Code Generation",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2610.05139",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Hidden in the Comments: A Context-Injection Attack Surface in Code LLMs",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2609.39568",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Self-Spec Verifiable Code Generation",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2610.05125",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "Bayesian Entropy-based Reordering for Calibrated Diffusion Language Models",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.03799",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "StepCAD: Mesh-to-CAD Code Generation via LLM Policy and Geometry-Guided Search",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.34717",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "ReMCTS: Reflection-Enhanced Monte Carlo Tree Search for Code Generation",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.05481",
+      "domain": "code",
+      "label": "neutral",
+      "note": "",
+      "title": "CodeForge-MA: Execution-Verified Multi-Agent Learning with Language-Conditioned LoRA for Multilingual Code Generation",
+      "pipelineSaid": "dropped: quality 2.00 < 3.4"
+    },
+    {
+      "id": "2610.06973",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Event Cameras for Melt-Pool Monitoring in Additive Manufacturing: A Benchmark and a Cross-Machine Transfer Analysis",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.39427",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "PCB-MC: Missing Component Analysis in Printed Circuit Boards",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.37360",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Visual Anomaly Synthesis for Model Selection in Data Scarcity",
+      "pipelineSaid": "passed"
+    },
+    {
+      "id": "2609.35432",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Self-Evolving Coding Agents: From Digital Programs to Physical-World Intelligence",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2609.34528",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Preference-Guided Adaptation for Open-Vocabulary Semantic Segmentation via Prompt Disagreement",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2610.00825",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Align Then Reason: A Multimodal Lip-Sync Judge for Dubbing",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2609.34274",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "BIABench: Evaluating AI agents on real-world bioimage analysis tasks",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.04392",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Detecting Defects that Matter: An Application-Driven Benchmark for Anomaly Detection in Manufacturing and Retail Logistics (VAND 4.0 Challenge)",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2609.35059",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Towards Generalizable 3D Anomaly Detection via Relational Inconsistency Modeling",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2609.34143",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Beyond Geometry: Benchmarking and Consistency Reasoning for 3D Logical Anomaly Detection",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2610.01856",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "ChunkVLA-AM: Parallel Action Chunking for Vision-Language-Action Robot Control in Additive Manufacturing",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2609.37314",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "FLASH: A \"Generate Once, Synthesize Many\" Framework for Synthetic Anomaly Generation in Industrial Anomaly Detection",
+      "pipelineSaid": "dropped: quality 3.00 < 3.4"
+    },
+    {
+      "id": "2610.02136",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "MIRTO: a registration-gated, multiverse-tested evaluation protocol for unsupervised anomaly segmentation in brain MRI",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2609.40083",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "The Effect of Tissue Detection on False Positives of Diffusion-Based Artifact Detection in Histopathology",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.07016",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Anchor and Adapt: Asymmetric Prompt Adaptation for Few-Shot Industrial Anomaly Detection",
+      "pipelineSaid": "dropped: quality 2.63 < 3.4"
+    },
+    {
+      "id": "2610.02494",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "DeepStratNet: A Context-Aware Coordinate Regression Framework for Seismic Horizon Tracking under Sparse Labels",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.04785",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Lollypop: Camera-to-Motion-Capture Calibration Verification with a Reference Target",
+      "pipelineSaid": "dropped: relevance 2 < 3"
+    },
+    {
+      "id": "2609.39207",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "ASENA: Self-evolving Agents for Embodied Navigation",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.05129",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Representation--Behavior Alignment for Explainable Weakly-Supervised Video Anomaly Detection",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2609.34180",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Decision Readouts for Text-Mediated Video Anomaly Detection: An Exploratory Evaluation of Jev and Qwen",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.01754",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "Cog-VADU: A Training-Free Cognitive Reasoning Framework for Video Anomaly Detection and Understanding",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.05131",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "RoMod: Temporal Routing Modulation via Mixture-of-Experts for Video Anomaly Detection",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.01863",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "LiteReality-Agent: An Agentic System for Interactable 3D Indoor Scene Reconstruction",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2610.03649",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "On-Board Anomaly Detection for Efficient Marine Environmental Monitoring",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    },
+    {
+      "id": "2609.39618",
+      "domain": "cv-industrial",
+      "label": "neutral",
+      "note": "",
+      "title": "TO-mdiSPAs: Topology Optimization of multi-directional Soft Pneumatic Actuators",
+      "pipelineSaid": "dropped: relevance 1 < 3"
+    }
+  ]
+}

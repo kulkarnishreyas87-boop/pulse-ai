@@ -1,0 +1,42 @@
+[
+  {
+    "id": "agents",
+    "name": "AI agents",
+    "arxivCats": ["cs.AI", "cs.MA", "cs.CL"],
+    "keywords": ["ai agent", "llm agent", "agentic", "tool use", "multi-agent", "web agent", "computer use", "agent benchmark"],
+    "excludeKeywords": [],
+    "intentNote": "Reliability, evaluation and real deployment of LLM agents, not toy demos.",
+    "maxPapers": 4,
+    "active": true
+  },
+  {
+    "id": "rag",
+    "name": "Retrieval-augmented generation",
+    "arxivCats": ["cs.CL", "cs.IR", "cs.AI"],
+    "keywords": ["retrieval-augmented generation", "retrieval augmented", "rag", "retriever", "reranking", "grounded generation"],
+    "excludeKeywords": [],
+    "intentNote": "Evaluation of retrieval quality and enterprise-scale RAG systems.",
+    "maxPapers": 4,
+    "active": true
+  },
+  {
+    "id": "code",
+    "name": "LLMs for code",
+    "arxivCats": ["cs.SE", "cs.CL", "cs.LG"],
+    "keywords": ["code generation", "code llm", "software engineering agent", "swe-bench", "program synthesis", "code completion", "repository-level"],
+    "excludeKeywords": [],
+    "intentNote": "Validated gains on real software engineering tasks.",
+    "maxPapers": 4,
+    "active": true
+  },
+  {
+    "id": "cv-industrial",
+    "name": "Computer vision for industrial applications",
+    "arxivCats": ["cs.CV", "eess.IV", "cs.RO"],
+    "keywords": ["industrial inspection", "defect detection", "anomaly detection", "manufacturing", "predictive maintenance", "visual inspection", "quality control"],
+    "excludeKeywords": [],
+    "intentNote": "Results on real factory data, not only public benchmarks.",
+    "maxPapers": 4,
+    "active": true
+  }
+]

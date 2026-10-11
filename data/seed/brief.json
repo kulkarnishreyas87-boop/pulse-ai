@@ -1,0 +1,90 @@
+{
+  "week": "sample",
+  "windowStart": "2026-10-05T00:00:00Z",
+  "windowEnd": "2026-10-11T23:59:59Z",
+  "generatedAt": "2026-10-12T02:30:00Z",
+  "isSample": true,
+  "isPartial": false,
+  "isStale": false,
+  "topThree": [
+    {
+      "arxivId": "sample-0001",
+      "title": "[Sample] Long-horizon agent benchmark with verified task completion",
+      "authors": "Placeholder authors",
+      "url": "https://arxiv.org",
+      "whyItMatters": "Placeholder: shows the layout of a top-3 card. A live run replaces this with a real paper.",
+      "summary": "Placeholder summary. Live briefs contain 2 to 3 sentences grounded only in the paper's abstract.",
+      "verdict": "client_flag",
+      "clientAngle": "Placeholder: relevant if a client is evaluating agent reliability before deployment.",
+      "caveats": "Sample content, not a real paper.",
+      "confidence": "Sample data"
+    },
+    {
+      "arxivId": "sample-0002",
+      "title": "[Sample] Retrieval evaluation on enterprise-scale corpora",
+      "authors": "Placeholder authors",
+      "url": "https://arxiv.org",
+      "whyItMatters": "Placeholder: demonstrates a RAG entry and its Read verdict.",
+      "summary": "Placeholder summary of an evaluation result and what it changes for practitioners.",
+      "verdict": "read",
+      "clientAngle": "Placeholder: useful for clients comparing retrieval strategies.",
+      "caveats": "Sample content, not a real paper.",
+      "confidence": "Sample data"
+    }
+  ],
+  "sections": [
+    {
+      "domainId": "agents",
+      "domainName": "AI agents",
+      "status": "ok",
+      "cards": [
+        {
+          "arxivId": "sample-0001",
+          "title": "[Sample] Long-horizon agent benchmark with verified task completion",
+          "authors": "Placeholder authors",
+          "url": "https://arxiv.org",
+          "whyItMatters": "Placeholder: shows how a card reads.",
+          "summary": "Placeholder summary. Live briefs contain 2 to 3 sentences grounded only in the abstract.",
+          "verdict": "client_flag",
+          "clientAngle": "Placeholder client angle.",
+          "caveats": "Sample content, not a real paper.",
+          "confidence": "Sample data"
+        }
+      ]
+    },
+    {
+      "domainId": "rag",
+      "domainName": "Retrieval-augmented generation",
+      "status": "ok",
+      "cards": [
+        {
+          "arxivId": "sample-0002",
+          "title": "[Sample] Retrieval evaluation on enterprise-scale corpora",
+          "authors": "Placeholder authors",
+          "url": "https://arxiv.org",
+          "whyItMatters": "Placeholder: a Read verdict example.",
+          "summary": "Placeholder summary of an evaluation result.",
+          "verdict": "read",
+          "clientAngle": "Placeholder client angle.",
+          "caveats": "Sample content, not a real paper.",
+          "confidence": "Sample data"
+        }
+      ]
+    },
+    {
+      "domainId": "code",
+      "domainName": "LLMs for code",
+      "status": "quiet",
+      "note": "Nothing cleared the significance threshold this week. This is a valid result, not a failure.",
+      "cards": []
+    },
+    {
+      "domainId": "cv-industrial",
+      "domainName": "Computer vision for industrial applications",
+      "status": "quiet",
+      "note": "Sample quiet-week state.",
+      "cards": []
+    }
+  ],
+  "meta": { "wordCount": 190, "papersSeen": 0, "papersScored": 0 }
+}
