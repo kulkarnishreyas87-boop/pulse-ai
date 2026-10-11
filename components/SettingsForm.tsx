@@ -122,9 +122,6 @@ export function SettingsForm() {
 
   return (
     <div className="settings">
-      <p className="window">
-        Add, remove or change the topics monitored each week. Changes apply from the next run. No code or deploy needed.
-      </p>
       {!meta.writable && (
         <div className="banner stale">Editing is disabled on this server (no admin passcode is configured).</div>
       )}

@@ -1,18 +1,15 @@
-import Link from "next/link";
 import { SettingsForm } from "@/components/SettingsForm";
+import { PageHero } from "@/components/PageHero";
 
 export const metadata = { title: "Domains · Research Pulse" };
 
 export default function SettingsPage() {
   return (
-    <main>
-      <header>
-        <p className="window">
-          <Link href="/" className="back">← Back to the brief</Link>
-        </p>
-        <h1>Monitored domains</h1>
-      </header>
-      <SettingsForm />
-    </main>
+    <>
+      <PageHero title="Monitored domains" sub="Choose the research areas the brief watches each week. Changes apply from the next Monday run, with no code or redeploy." />
+      <main className="wrap page">
+        <SettingsForm />
+      </main>
+    </>
   );
 }
