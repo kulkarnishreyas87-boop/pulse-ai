@@ -37,9 +37,11 @@ Import the repository. Add these **Environment Variables** (Production):
 
 `vercel.json` already schedules the Monday 00:00 UTC cron.
 
-## 4. GitHub Actions secrets (for the ticker)
+## 4. Scheduling
 
-Repository Settings, Secrets and variables, Actions: add `APP_URL` (same URL) and `CRON_SECRET` (same value as Vercel).
+Nothing to do: `vercel.json` schedules the Monday run on Vercel Cron (00:00 UTC) plus six follow-up steps, and Vercel
+sends `CRON_SECRET` automatically. Optional extra driver: add `.github/workflows/tick.yml` to the repository (this needs a
+GitHub token with the `workflow` scope) and set the repository secrets `APP_URL` and `CRON_SECRET`.
 
 ## 5. Verify
 
@@ -47,11 +49,11 @@ Repository Settings, Secrets and variables, Actions: add `APP_URL` (same URL) an
 curl https://<your-app>/api/health        # database "ok", gemini/cron/admin "configured"
 ```
 
-Then trigger one real run without waiting for Monday: GitHub, Actions, **weekly-tick**, Run workflow. Watch
+Then trigger one real run without waiting for Monday: Vercel dashboard, the project, **Settings, Cron Jobs**, then **Run** next to `/api/run`. Watch
 `https://<your-app>/status`. When it finishes, the home page shows the new brief and (if email is configured) one email arrives.
 
 ## Things to expect
 
-- Vercel Hobby cron fires "within the hour" of 00:00 UTC. The ticker covers this.
+- Vercel Hobby cron fires "within the hour" of its scheduled time. The six follow-up steps and the 02:00 UTC cutoff absorb this.
 - Resend's shared sender (`onboarding@resend.dev`) only delivers to your own account's email address.
 - The first live run on a fresh database re-scores every paper (nothing is cached yet).

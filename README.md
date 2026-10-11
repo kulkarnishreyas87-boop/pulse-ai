@@ -34,10 +34,11 @@ Import the repo into Vercel, then add the env vars from `.env.example`.
 
 ## How a week runs (step 6)
 
-Monday 00:00 UTC, Vercel Cron calls `/api/run`, which creates the week's job graph (idempotent). The GitHub
-Actions workflow then calls `/api/step` repeatedly. Each call claims and runs jobs for ~25s and returns, so
-nothing exceeds Vercel Hobby's function limit. No job makes more than one Gemini call. If the cron is missed,
-the first tick creates the run itself.
+Monday 00:00 UTC, Vercel Cron calls `/api/run`, which creates the week's job graph (idempotent) and starts working
+through it. Six more Vercel Cron entries (00:15 to 04:30 UTC) call `/api/step`. Each step runs jobs for up to about
+4 minutes and returns, inside Vercel's 5-minute function limit. No job makes more than one Gemini call. A full week
+needs about 6 minutes of work, so the first two steps normally finish it. A GitHub Actions ticker
+(`.github/workflows/tick.yml`, not in the repository by default) can be added as an extra driver.
 
 ```
 hf ─┐
@@ -56,7 +57,8 @@ abstract excerpts, and at the cutoff (Monday 02:00 UTC) the brief publishes with
 and is recomposed once if late domains finish. If no domain produced any content, nothing is published and the
 previous brief stays in place.
 
-Required secrets for the workflow: `APP_URL` and `CRON_SECRET` (GitHub repo secrets).
+Vercel sends `CRON_SECRET` to the cron routes automatically. The optional GitHub ticker would need `APP_URL` and
+`CRON_SECRET` as repository secrets.
 
 ## Email (step 7)
 

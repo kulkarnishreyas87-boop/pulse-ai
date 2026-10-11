@@ -62,8 +62,8 @@ const ROWS = [
    {id:"k1", c:0, h:`Kavita changes her domain list in Settings as client mandates shift. <b>No code, no deploy.</b>`},
    {id:"k2", c:5, h:`Reads the brief in <b>under 10 minutes</b>: top 3, a <b>This week</b> line per domain, cards tagged <b>New benchmark / Surprising result / Reframes the problem</b> with Read / Skim / Client-flag. One click to arXiv.`}]},
  {id:"sched", cls:"r-sched", name:"Scheduler", sub:"Vercel Cron + GitHub Actions", boxes:[
-   {id:"s1", c:0, h:`<b>Vercel Cron</b>, Monday 00:00 UTC, creates the week's job graph. <b>GitHub Actions</b> (00:10, 00:40, 01:40 UTC) keeps calling the step endpoint until the week is finished, and creates the run itself if the cron was missed.`},
-   {id:"s2", c:1, h:`Each call to <b>/api/step</b> claims jobs with a lease and runs them for ~25 s, then returns. No job makes more than one Gemini call; a job over 52 s is abandoned and retried.`},
+   {id:"s1", c:0, h:`<b>Vercel Cron</b>, Monday 00:00 UTC, creates the week's job graph and starts on it. Six more Vercel Cron steps (00:15 to 04:30 UTC) keep working it. A GitHub Actions ticker is an optional backup.`},
+   {id:"s2", c:1, h:`Each step claims jobs with a lease and runs them for up to ~4 min, then returns. No job makes more than one Gemini call; a job over 52 s is abandoned and retried.`},
    {id:"s3", c:5, h:`Cutoff Monday 02:00 UTC (7:30 IST): publishes what is ready, marked <b>partial</b>, then recomposes once if late domains finish. Stuck jobs are re-queued.`}]},
  {id:"settings", cls:"r-settings", name:"Settings", sub:"Next.js + Neon", boxes:[
    {id:"st1", c:1, h:`Domain form: name, arXiv categories, keywords, a <b>"what matters to me"</b> note, max papers.`},

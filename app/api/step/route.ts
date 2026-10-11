@@ -5,9 +5,10 @@ import { defaultCtx } from "@/lib/jobs/handlers";
 import { tick } from "@/lib/jobs/runner";
 
 export const dynamic = "force-dynamic";
-// Declared so the platform allows a full step. The runner stops STARTING jobs after ~25s, since the slowest
-// single job is one Gemini call, so a step always ends well inside this limit.
-export const maxDuration = 60;
+// Each scheduled step may run up to 5 minutes. The runner stops STARTING new jobs 60s before that (the
+// slowest single job is one Gemini call, capped at 52s), so a step always ends inside the limit.
+export const maxDuration = 300;
+const STEP_BUDGET_MS = maxDuration * 1000 - 60_000;
 
 /**
  * One serverless step: create the week's run if it does not exist yet, then claim and run jobs until the
@@ -18,7 +19,7 @@ async function handle(req: Request) {
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   try {
     const week = new URL(req.url).searchParams.get("week") ?? undefined;
-    const result = await tick(defaultCtx(), { week, autoCreate: true, getDomains: async () => (await getDomains()).domains });
+    const result = await tick(defaultCtx(), { week, autoCreate: true, getDomains: async () => (await getDomains()).domains, budgetMs: STEP_BUDGET_MS });
     return NextResponse.json(result);
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message.slice(0, 200) : "step failed" }, { status: 500 });
