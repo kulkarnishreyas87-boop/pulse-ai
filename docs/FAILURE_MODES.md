@@ -51,7 +51,7 @@ Where can this system go wrong, what stops it, and what is the evidence? Evidenc
 
 | # | Failure | Mitigation | Evidence |
 |---|---|---|---|
-| 15 | **Email duplicated, lost or abused** | One email per week and variant (guard taken before sending); Resend idempotency key; plain-text part; escaped HTML; only plain arXiv links; header-injection-proof subject; missing config skips instead of failing | Test (12 cases). **Open: no real email has been sent yet; delivery and spam placement are unverified** |
+| 15 | **Email duplicated, lost or abused** | One email per week and variant (guard taken before sending); Resend idempotency key; plain-text part; escaped HTML; only plain arXiv links; header-injection-proof subject; missing config skips instead of failing | Test (13 cases incl. dry run). Live: a real email of the live brief was delivered to the inbox (Resend status "delivered", confirmed by the recipient, not in spam) |
 | 16 | **Bad domain settings** | Cap of 10 domains; unique names; categories validated against a list; keywords required | Test |
 | 17 | **Secrets leaked or endpoints abused** | Admin passcode and cron secret both **fail closed in production**; AI endpoint rate limited; error text redacted in the public status; secret scan across the repository; security headers; API never cached | Test, and verified on a real production build. A scan test caught a real key-lookalike I had pasted into a test file; it was removed |
 | 25 | **Vulnerable dependencies** | PostCSS pinned to a patched version; CI audits on every push | `npm audit`: 0 vulnerabilities |

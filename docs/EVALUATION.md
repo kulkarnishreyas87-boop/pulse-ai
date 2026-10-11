@@ -117,7 +117,8 @@ the obvious lever; it should be decided with labelled data, not by eye.
   `must` or `should_not`, then `npm run eval`. About 30 labels is enough to be informative.
 - **The look back skipping last week's papers on a real second week.** Shown in simulation (`tests/fixes.test.ts`);
   the first real proof is the next Monday run.
-- **Real email delivery** and the **deployed** cron and ticker.
+- **The deployed Monday cron** driving a run on Vercel (first real run: Monday 12 Oct 2026, 00:00 UTC). Real email delivery is
+  verified: a test email of the live brief reached the inbox.
 
 ## Test suite
 
