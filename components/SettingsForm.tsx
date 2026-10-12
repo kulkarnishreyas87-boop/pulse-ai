@@ -16,6 +16,17 @@ interface Row {
   msg?: string;
 }
 
+interface ApiDomain {
+  id: string;
+  name: string;
+  intentNote: string;
+  arxivCats: string[];
+  keywords: string[];
+  excludeKeywords: string[];
+  maxPapers: number;
+  active: boolean;
+}
+
 const split = (s: string) => s.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
 const slug = (name: string, taken: string[]) => {
   const base = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 30) || "domain";
@@ -23,84 +34,43 @@ const slug = (name: string, taken: string[]) => {
   for (let n = 2; taken.includes(id); n++) id = `${base}-${n}`;
   return id;
 };
-const key = () => {
-  try {
-    return sessionStorage.getItem("rp-admin") ?? "";
-  } catch {
-    return "";
-  }
-};
+const toRows = (domains: ApiDomain[]): Row[] =>
+  domains.map((d) => ({
+    id: d.id,
+    name: d.name,
+    intentNote: d.intentNote,
+    catsText: d.arxivCats.join(", "),
+    kwText: d.keywords.join(", "),
+    exText: d.excludeKeywords.join(", "),
+    maxPapers: d.maxPapers,
+    active: d.active,
+  }));
 
 export function SettingsForm() {
   const [rows, setRows] = useState<Row[]>([]);
-  const [meta, setMeta] = useState<{ source: string; max: number; writable: boolean; needsPasscode: boolean } | null>(null);
-  const [pass, setPass] = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [unlocked, setUnlocked] = useState(false);
-  const [checking, setChecking] = useState(false);
-  const [passMsg, setPassMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [meta, setMeta] = useState<{ source: string; max: number; writable: boolean; hasPrevious: boolean } | null>(null);
   const [status, setStatus] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
+  const [undoing, setUndoing] = useState(false);
 
   useEffect(() => {
-    const remembered = key();
-    setPass(remembered);
-    if (remembered) void unlock(remembered, true);
     fetch("/api/domains")
       .then((r) => r.json())
       .then((j) => {
-        setMeta({ source: j.source, max: j.max, writable: j.writable, needsPasscode: j.needsPasscode });
-        setRows(
-          j.domains.map((d: any) => ({
-            id: d.id,
-            name: d.name,
-            intentNote: d.intentNote,
-            catsText: d.arxivCats.join(", "),
-            kwText: d.keywords.join(", "),
-            exText: d.excludeKeywords.join(", "),
-            maxPapers: d.maxPapers,
-            active: d.active,
-          })),
-        );
+        setMeta({ source: j.source, max: j.max, writable: j.writable, hasPrevious: j.hasPrevious });
+        setRows(toRows(j.domains));
       })
       .catch(() => setStatus({ kind: "err", text: "Could not load domains." }));
   }, []);
 
   const patch = (i: number, p: Partial<Row>) => setRows((rs) => rs.map((r, j) => (j === i ? { ...r, ...p } : r)));
-  const headers = () => ({ "Content-Type": "application/json", "x-admin-key": pass.trim() });
-
-  /** Checks the passcode with the server before any edits, so a typo shows up straight away. */
-  async function unlock(value = pass, quiet = false) {
-    if (!value.trim()) return;
-    setChecking(true);
-    if (!quiet) setPassMsg(null);
-    try {
-      const res = await fetch("/api/admin/check", { method: "POST", headers: { "x-admin-key": value.trim() } });
-      const j = await res.json().catch(() => ({}));
-      if (res.ok) {
-        setUnlocked(true);
-        setPassMsg({ kind: "ok", text: "Unlocked. You can edit and save your domains." });
-        try {
-          sessionStorage.setItem("rp-admin", value.trim());
-        } catch {}
-      } else {
-        setUnlocked(false);
-        try {
-          sessionStorage.removeItem("rp-admin");
-        } catch {}
-        if (!quiet) setPassMsg({ kind: "err", text: j.error ?? "That passcode was not accepted." });
-      }
-    } catch {
-      setPassMsg({ kind: "err", text: "Could not reach the server to check the passcode." });
-    }
-    setChecking(false);
-  }
+  const json = { "Content-Type": "application/json" };
 
   async function suggest(i: number) {
     const r = rows[i];
     patch(i, { busy: true, msg: "" });
     try {
-      const res = await fetch("/api/domains/expand", { method: "POST", headers: headers(), body: JSON.stringify({ name: r.name, intentNote: r.intentNote }) });
+      const res = await fetch("/api/domains/expand", { method: "POST", headers: json, body: JSON.stringify({ name: r.name, intentNote: r.intentNote }) });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? "Failed");
       patch(i, {
@@ -118,9 +88,6 @@ export function SettingsForm() {
   async function save() {
     setSaving(true);
     setStatus(null);
-    try {
-      sessionStorage.setItem("rp-admin", pass);
-    } catch {}
     // a new row gets its id from the name the user finally typed, not a placeholder
     const taken: string[] = rows.filter((r) => !r.isNew).map((r) => r.id);
     const domains = rows.map((r) => ({
@@ -134,15 +101,32 @@ export function SettingsForm() {
       active: r.active,
     }));
     try {
-      const res = await fetch("/api/domains", { method: "PUT", headers: headers(), body: JSON.stringify({ domains }) });
+      const res = await fetch("/api/domains", { method: "PUT", headers: json, body: JSON.stringify({ domains }) });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? "Could not save");
       setRows((rs) => rs.map((r, i) => ({ ...r, id: domains[i].id, isNew: false }))); // ids are now fixed
+      setMeta((m) => (m ? { ...m, hasPrevious: true, source: j.source } : m));
       setStatus({ kind: "ok", text: `Saved ${j.count} domains. The next Monday run will use them.` });
     } catch (e) {
       setStatus({ kind: "err", text: e instanceof Error ? e.message : "Could not save" });
     }
     setSaving(false);
+  }
+
+  /** Puts back the list as it was before the last save (pressing it again re-applies that save). */
+  async function undo() {
+    setUndoing(true);
+    setStatus(null);
+    try {
+      const res = await fetch("/api/domains/undo", { method: "POST" });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error ?? "Could not undo");
+      setRows(toRows(j.domains));
+      setStatus({ kind: "ok", text: "Restored the domains as they were before the last change." });
+    } catch (e) {
+      setStatus({ kind: "err", text: e instanceof Error ? e.message : "Could not undo" });
+    }
+    setUndoing(false);
   }
 
   const add = () =>
@@ -155,41 +139,8 @@ export function SettingsForm() {
 
   return (
     <div className="settings">
-      {!meta.writable && (
-        <div className="banner stale">Editing is disabled on this server (no admin passcode is configured).</div>
-      )}
+      {!meta.writable && <div className="banner stale">Editing is unavailable: no database is configured on this server.</div>}
       {meta.source === "default" && <div className="banner sample">Showing the built-in starter domains. Saving creates your own list.</div>}
-
-      {meta.needsPasscode && (
-        <div className={`card unlock ${unlocked ? "is-unlocked" : ""}`}>
-          <label className="field" htmlFor="admin-pass">
-            Admin passcode
-          </label>
-          <div className="pass-row">
-            <input
-              id="admin-pass"
-              type={showPass ? "text" : "password"}
-              value={pass}
-              onChange={(e) => {
-                setPass(e.target.value);
-                setUnlocked(false);
-              }}
-              onKeyDown={(e) => e.key === "Enter" && unlock()}
-              placeholder="Paste the ADMIN_PASSCODE value"
-              autoComplete="off"
-              spellCheck={false}
-            />
-            <button type="button" className="btn" onClick={() => setShowPass((s) => !s)} aria-pressed={showPass}>
-              {showPass ? "Hide" : "Show"}
-            </button>
-            <button type="button" className="btn primary" onClick={() => unlock()} disabled={checking || !pass.trim() || unlocked}>
-              {checking ? "Checking…" : unlocked ? "Unlocked ✓" : "Unlock"}
-            </button>
-          </div>
-          <p className="hint">It is the value after <code>ADMIN_PASSCODE=</code> in your <code>.env.local</code> file, the same one saved in Vercel.</p>
-          {passMsg && <p className={`pass-msg ${passMsg.kind}`}>{passMsg.text}</p>}
-        </div>
-      )}
 
       {rows.map((r, i) => (
         <article className={`card dom ${r.active ? "" : "off"}`} key={r.id}>
@@ -206,7 +157,7 @@ export function SettingsForm() {
             What matters to you in this domain (optional)
             <input value={r.intentNote} onChange={(e) => patch(i, { intentNote: e.target.value })} maxLength={400} placeholder="e.g. Reliability and real deployment, not toy demos" />
           </label>
-          <button type="button" className="btn" disabled={r.busy || r.name.trim().length < 2 || (meta.needsPasscode && !unlocked)} onClick={() => suggest(i)}>
+          <button type="button" className="btn" disabled={r.busy || r.name.trim().length < 2} onClick={() => suggest(i)}>
             {r.busy ? "Thinking…" : "Suggest search terms with AI"}
           </button>
           {r.msg && <p className="meta">{r.msg}</p>}
@@ -238,9 +189,14 @@ export function SettingsForm() {
         <button type="button" className="btn" onClick={add} disabled={rows.length >= meta.max}>
           Add a domain {rows.length >= meta.max ? `(max ${meta.max})` : ""}
         </button>
-        <button type="button" className="btn primary" onClick={save} disabled={saving || !meta.writable || (meta.needsPasscode && !unlocked)} title={meta.needsPasscode && !unlocked ? "Unlock with the admin passcode first" : undefined}>
+        <button type="button" className="btn primary" onClick={save} disabled={saving || !meta.writable}>
           {saving ? "Saving…" : "Save changes"}
         </button>
+        {meta.hasPrevious && (
+          <button type="button" className="btn" onClick={undo} disabled={undoing || !meta.writable}>
+            {undoing ? "Restoring…" : "Undo last change"}
+          </button>
+        )}
       </div>
       {status && <div className={`banner ${status.kind === "ok" ? "okmsg" : "stale"}`}>{status.text}</div>}
     </div>

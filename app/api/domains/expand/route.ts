@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { adminFromEnv, rateLimited } from "@/lib/admin";
+import { rateLimited } from "@/lib/admin";
 import { expandDomain } from "@/lib/ai/expand";
 import { generateJson } from "@/lib/ai/gemini";
 
@@ -11,8 +11,6 @@ const Body = z.object({ name: z.string().trim().min(2).max(80), intentNote: z.st
 
 /** Proposes search settings for a domain. Nothing is saved: the user reviews and edits the proposal. */
 export async function POST(req: Request) {
-  const auth = adminFromEnv(req.headers);
-  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   if (rateLimited("expand")) return NextResponse.json({ error: "Too many requests. Wait a minute." }, { status: 429 });
 
   const parsed = Body.safeParse(await req.json().catch(() => null));

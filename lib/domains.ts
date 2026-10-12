@@ -3,7 +3,7 @@ import defaults from "@/data/domains.default.json";
 import { Domain } from "./schema";
 import { isKnownCategory } from "./arxivCategories";
 import { hasDb, requireDb } from "./db/client";
-import { loadDomains, replaceDomains } from "./db/repo";
+import { loadDomains, loadDomainsBackup, replaceDomains, saveDomainsBackup } from "./db/repo";
 
 export const MAX_DOMAINS = 10;
 
@@ -70,9 +70,13 @@ export async function getDomains(): Promise<{ domains: Domain[]; source: DomainS
   return { domains: defaultDomains, source: "default" };
 }
 
-/** Throws if there is nowhere durable to write. Returns where it saved. */
-export async function saveDomains(list: Domain[]): Promise<DomainSource> {
-  const valid = DomainList.parse(list);
+async function devBackupFile() {
+  const { join } = await import("node:path");
+  return join(process.cwd(), ".cache", "domains.previous.json");
+}
+
+/** Writes the list where getDomains reads it from. Throws if there is nowhere durable to write. */
+async function writeList(valid: Domain[]): Promise<DomainSource> {
   if (hasDb()) {
     await replaceDomains(await requireDb(), valid);
     return "neon";
@@ -86,4 +90,52 @@ export async function saveDomains(list: Domain[]): Promise<DomainSource> {
     return "dev-file";
   }
   throw new Error("No database is configured. Add DATABASE_URL (your Neon connection string) to save domains.");
+}
+
+async function writeBackup(list: Domain[]): Promise<void> {
+  if (hasDb()) return saveDomainsBackup(await requireDb(), list);
+  if (process.env.NODE_ENV !== "production") {
+    const { mkdir, writeFile } = await import("node:fs/promises");
+    const { dirname } = await import("node:path");
+    const file = await devBackupFile();
+    await mkdir(dirname(file), { recursive: true });
+    await writeFile(file, JSON.stringify(list, null, 2));
+  }
+}
+
+/** The list as it was before the last save, or null if there has been no save yet. */
+export async function getPreviousDomains(): Promise<Domain[] | null> {
+  try {
+    let raw: unknown = null;
+    if (hasDb()) raw = await loadDomainsBackup(await requireDb());
+    else if (process.env.NODE_ENV !== "production") {
+      const { readFile } = await import("node:fs/promises");
+      raw = JSON.parse(await readFile(await devBackupFile(), "utf8"));
+    }
+    const parsed = DomainList.safeParse(raw);
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Saves a new domain list. Settings has no passcode (the owner's choice), so every save first keeps
+ * the current list as a backup: any change, by anyone, can be undone in one click.
+ */
+export async function saveDomains(list: Domain[]): Promise<DomainSource> {
+  const valid = DomainList.parse(list);
+  const current = (await getDomains()).domains;
+  await writeBackup(current);
+  return writeList(valid);
+}
+
+/** Swaps the current list with the backup. Pressing undo twice re-applies the change. */
+export async function undoDomains(): Promise<Domain[]> {
+  const previous = await getPreviousDomains();
+  if (!previous) throw new Error("There is no earlier version to restore.");
+  const current = (await getDomains()).domains;
+  await writeList(previous);
+  await writeBackup(current);
+  return previous;
 }

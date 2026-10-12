@@ -5,7 +5,7 @@ import { SCHEMA, setDb, getDb, lazyDb, type Db } from "../lib/db/client";
 import { PgKv } from "../lib/db/pgkv";
 import { Domain, type Paper } from "../lib/schema";
 import type { JsonLlm } from "../lib/ai/gemini";
-import { getDomains, saveDomains, defaultDomains } from "../lib/domains";
+import { getDomains, saveDomains, defaultDomains, getPreviousDomains, undoDomains } from "../lib/domains";
 import { getBrief, getLatestBrief, listWeeks, publishBrief, seedBrief } from "../lib/store";
 import { tick } from "../lib/jobs/runner";
 import { defaultCtx, type Ctx } from "../lib/jobs/handlers";
@@ -53,6 +53,31 @@ test("domains: defaults when empty, then saved to Postgres and read back in orde
   await saveDomains([mk("a", "Alpha 2")]);
   assert.deepEqual((await getDomains()).domains.map((d) => d.name), ["Alpha 2"]);
   assert.ok(defaultDomains.length >= 1);
+});
+
+test("undo: every save keeps the previous list, and undo swaps them back (twice re-applies)", async () => {
+  await reset();
+  const mk = (id: string, name: string) => Domain.parse({ id, name, keywords: ["abc def"], arxivCats: ["cs.AI"] });
+  await assert.rejects(undoDomains(), /no earlier version/, "nothing to undo before the first save");
+  await saveDomains([mk("a", "Alpha")]);
+  const firstPrev = await getPreviousDomains();
+  assert.deepEqual(firstPrev!.map((d) => d.id), defaultDomains.map((d) => d.id), "the first save keeps the starter list");
+  await saveDomains([mk("a", "Alpha"), mk("b", "Beta")]);
+  assert.deepEqual((await getPreviousDomains())!.map((d) => d.id), ["a"]);
+  const restored = await undoDomains();
+  assert.deepEqual(restored.map((d) => d.id), ["a"]);
+  assert.deepEqual((await getDomains()).domains.map((d) => d.id), ["a"], "the live list is the restored one");
+  await undoDomains();
+  assert.deepEqual((await getDomains()).domains.map((d) => d.id), ["a", "b"], "undo again re-applies the change");
+});
+
+test("a vandal deleting every domain is one click from recovery", async () => {
+  await reset();
+  const mk = (id: string, name: string) => Domain.parse({ id, name, keywords: ["abc def"], arxivCats: ["cs.AI"] });
+  await saveDomains([mk("rag", "RAG"), mk("code", "Code")]);
+  await saveDomains([Domain.parse({ id: "junk", name: "Junk", keywords: ["spam spam"], arxivCats: [] })]);
+  await undoDomains();
+  assert.deepEqual((await getDomains()).domains.map((d) => d.id), ["rag", "code"]);
 });
 
 test("saveDomains rejects invalid lists before touching the database", async () => {

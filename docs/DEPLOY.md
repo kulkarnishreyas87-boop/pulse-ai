@@ -30,7 +30,6 @@ Import the repository. Add these **Environment Variables** (Production):
 | `GEMINI_API_KEY` | your Gemini key |
 | `GEMINI_MODEL` | `gemini-3.8-flash` (optional; this is the default) |
 | `CRON_SECRET` | any long random string you invent |
-| `ADMIN_PASSCODE` | a passcode for the Settings page |
 | `RESEND_API_KEY` | your Resend key |
 | `EMAIL_TO` | recipient address (with no verified domain, Resend only delivers to your own Resend account email) |
 | `APP_URL` | the deployed URL, e.g. `https://research-pulse.vercel.app` |

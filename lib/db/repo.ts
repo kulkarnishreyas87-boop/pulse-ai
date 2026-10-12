@@ -44,3 +44,20 @@ export async function replaceDomains(d: Db, list: Domain[]): Promise<void> {
   }
   await d.query(`DELETE FROM domains WHERE id <> ALL($1::text[])`, [list.map((x) => x.id)]);
 }
+
+/* The domain list as it was before the last save, so a bad edit can be undone in one click. */
+
+const BACKUP_KEY = "domains:previous";
+
+export async function saveDomainsBackup(d: Db, list: Domain[]): Promise<void> {
+  await d.query(
+    `INSERT INTO kv (key, value, expires_at) VALUES ($1, $2::jsonb, NULL)
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, expires_at = NULL`,
+    [BACKUP_KEY, JSON.stringify(list)],
+  );
+}
+
+export async function loadDomainsBackup(d: Db): Promise<unknown | null> {
+  const rows = await d.query(`SELECT value FROM kv WHERE key = $1`, [BACKUP_KEY]);
+  return rows.length ? rows[0].value : null;
+}

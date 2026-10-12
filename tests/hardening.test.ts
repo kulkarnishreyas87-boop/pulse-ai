@@ -298,7 +298,7 @@ test("secrets and caches are gitignored, and .env.example holds no values for se
   for (const must of [".env.local", ".env", "node_modules", ".cache", ".next", ".vercel"]) assert.ok(ignore.split(/\r?\n/).includes(must), `${must} must be ignored`);
   const example = readFileSync(join(process.cwd(), ".env.example"), "utf8");
   for (const line of example.split(/\r?\n/)) {
-    const m = /^(GEMINI_API_KEY|DATABASE_URL|RESEND_API_KEY|CRON_SECRET|ADMIN_PASSCODE|EMAIL_TO)=(.*)$/.exec(line);
+    const m = /^(GEMINI_API_KEY|DATABASE_URL|RESEND_API_KEY|CRON_SECRET|EMAIL_TO)=(.*)$/.exec(line);
     if (m) assert.equal(m[2], "", `${m[1]} must be blank in .env.example`);
   }
 });

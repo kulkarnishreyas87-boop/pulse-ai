@@ -25,6 +25,5 @@ export async function GET() {
     model: geminiModel,
     email: email.ready ? "configured" : `not configured (${email.reason})`,
     cron: process.env.CRON_SECRET ? "configured" : "missing",
-    admin: process.env.ADMIN_PASSCODE ? "configured" : "missing",
   });
 }
