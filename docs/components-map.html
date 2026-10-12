@@ -60,14 +60,14 @@ const AI = '<i class="tag ai">AI</i>', CODE = '<i class="tag det">CODE</i>';
 const ROWS = [
  {id:"kavita", cls:"r-kavita", name:"Kavita", sub:"Consultant", boxes:[
    {id:"k1", c:0, h:`Kavita changes her domain list in Settings as client mandates shift. <b>No code, no deploy, no passcode.</b>`},
-   {id:"k2", c:5, h:`Starts on the <b>overview</b> (top 3 and a photo tile per domain), then opens each <b>domain page</b>: the <b>This week</b> line and cards tagged New benchmark / Surprising result / Reframes the problem, with Read / Skim / Client-flag. Under 10 minutes.`}]},
+   {id:"k2", c:5, h:`Starts on the <b>overview</b> (top 3 and a photo tile per domain), then opens each <b>domain page</b>: the <b>This week</b> line and cards tagged New benchmark / Surprising result / Reframes the problem, with Read / Skim / Client-flag. Under 10 minutes. <b>Search</b> finds any topic across past weeks.`}]},
  {id:"sched", cls:"r-sched", name:"Scheduler", sub:"Vercel Cron", boxes:[
    {id:"s1", c:0, h:`<b>Vercel Cron</b>, Monday 00:00 UTC, creates the week's job graph and starts on it. Twelve more Vercel Cron steps (00:10 to 06:00 UTC) keep working it; the later ones are slack for retries.`},
    {id:"s2", c:1, h:`Each step claims jobs with a lease and runs them for up to ~4 min, then returns. No job makes more than one Gemini call; a job over 52 s is abandoned and retried.`},
    {id:"s3", c:5, h:`Cutoff Monday 03:00 UTC (8:30 IST): publishes what is ready, marked <b>partial</b>, then recomposes once if late domains finish. Stuck jobs are re-queued.`}]},
  {id:"settings", cls:"r-settings", name:"Settings", sub:"Next.js + Neon", boxes:[
-   {id:"st1", c:1, h:`Domain form: name, arXiv categories, keywords, a <b>"what matters to me"</b> note, max papers.`},
-   {id:"st2", c:3, h:`${CODE} Validates with Zod, caps domains and papers, shows the query-expansion preview. <b>No passcode</b> (owner's choice): saves, undo and AI suggestions are rate limited per caller <b>in the database</b> (shared by every server instance), plus a daily AI cap.`},
+   {id:"st1", c:1, h:`Domain form: name, arXiv categories, keywords, exclude phrases, a <b>"what matters to me"</b> note, max papers (1 to 6).`},
+   {id:"st2", c:3, h:`${CODE} Validates with Zod (up to 10 domains), shows the query-expansion preview. <b>No passcode</b> (owner's choice): saves, undo and AI suggestions are rate limited per caller <b>in the database</b> (shared by every server instance), plus a daily AI cap.`},
    {id:"st3", c:5, h:`Saved to Neon (domains table). The <b>last 10 versions</b> are kept, so <b>Undo last change</b> steps back one version per click. The next run picks it up.`}]},
  {id:"expand", cls:"r-gem", name:"Gemini Flash", sub:"Query expander", boxes:[
    {id:"x1", c:2, h:`Domain name + intent note. Runs only when Kavita clicks <b>Suggest</b>.`},
@@ -88,7 +88,7 @@ const ROWS = [
    {id:"g3", c:5, h:`Zod-validated scores. One repair retry, then the domain <b>degrades</b> to unscored top papers.`}]},
  {id:"rank", cls:"r-sys", name:"System", sub:"Rank", boxes:[
    {id:"r1", c:3, h:`${CODE} Signal = the strongest of the three; a new benchmark counts as strong only with solid evidence. Quality = 0.40 signal + 0.35 evidence + 0.25 relevance − hype, where hype is the higher of the model's view and a <b>wording check in code</b>. Attention only orders.`},
-   {id:"r2", c:5, h:`Threshold applied. Below it the domain shows <b>quiet week</b>, no padding. Top-k go to the writer.`}]},
+   {id:"r2", c:5, h:`Pass only if relevance ≥ 3 <b>and</b> quality ≥ 3.3. Below it the domain shows <b>quiet week</b>, no padding. The best (max papers, default 4) go to the writer.`}]},
  {id:"writer", cls:"r-gem", name:"Gemini Flash", sub:"Writer and verifier", boxes:[
    {id:"w1", c:2, h:`Guardrails: <b>abstract + metadata only</b>. Abstracts are data, never instructions. JSON schema enforced.`},
    {id:"w2", c:4, h:`${AI} Writes why it matters, a 2 to 3 sentence summary, <b>Read / Skim / Client-flag</b>, client angle, caveats, evidence quote. Then a <b>verify pass</b> marks each claim supported or not.`},
@@ -99,7 +99,7 @@ const ROWS = [
    {id:"t3", c:5, h:`Kept only if it cites 2+ papers in the brief (1+ verified), adds no numbers, and makes no "consensus / proves" claim. Otherwise left out.`}]},
  {id:"compose", cls:"r-sys", name:"System", sub:"Compose", boxes:[
    {id:"c1", c:1, h:`Verified cards per domain.`},
-   {id:"c2", c:3, h:`${CODE} <b>≤ 1,800 words</b> (about 9 min) enforced in code, cross-domain top 3, takeaways counted, confidence labels, quiet-week lines.`},
+   {id:"c2", c:3, h:`${CODE} <b>≤ 1,800 words</b> (about 9 min) enforced in code; cross-domain top 3 (at most 2 from one domain); takeaways counted; confidence labels; quiet-week lines.`},
    {id:"c3", c:5, h:`Saved to the <b>briefs</b> table in Neon. A labelled sample brief shows until the first live run.`}]},
  {id:"store", cls:"r-store", name:"Neon Postgres", sub:"Database", boxes:[
    {id:"d1", c:2, h:`Tables: <b>domains</b>, <b>briefs</b> (one row per week), <b>kv</b> (job queue, leases, score cache, <b>sent</b> guards). A claim is one atomic INSERT.`}]},
@@ -204,6 +204,9 @@ function draw(){
           pts=[[ax,sy],[ax,y2],[bx,y2],[bx,ey]];
         } else if(!hits(bx,y1,ey)){ // go over in the gap just below the source
           pts=[[ax,sy],[ax,y1],[bx,y1],[bx,ey]];
+        } else if(!hits((ib.col>ia.col? B.l-9 : B.r+9)+jit, y1, B.cy)){ // gap below the source, then a side lane down to the target
+          const lx = (ib.col>ia.col? B.l-9 : B.r+9)+jit;
+          pts=[[ax,sy],[ax,y1],[lx,y1],[lx,B.cy],[ib.col>ia.col?B.l:B.r,B.cy]];
         } else {                    // fall back to side lane
           const lx = (ib.col>ia.col? B.l-9 : B.r+9)+jit;
           pts=[[ib.col>ia.col?A.r:A.l,A.cy],[lx,A.cy],[lx,B.cy],[ib.col>ia.col?B.l:B.r,B.cy]];

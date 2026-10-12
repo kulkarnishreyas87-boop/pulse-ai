@@ -39,7 +39,7 @@ export const MAX_ATTEMPTS = 3;
  * retry, and twelve cron steps before the cutoff leave room for it.
  */
 export const maxAttempts = (kind: JobKind) => (kind === "fetch" || kind === "hf" ? 10 : kind === "embed" ? 4 : MAX_ATTEMPTS);
-export const LEASE_SEC = 100; // longer than a step (60s), so a killed step's job is picked up again soon after
+export const LEASE_SEC = 100; // longer than any one job (52 s timeout), so a killed step's job is picked up again soon after
 export const DATA_TTL = 60 * 60 * 24 * 21;
 export const CUTOFF_HOURS = 3; // hours after the week ends (Monday 03:00 UTC, about 08:30 IST)
 
