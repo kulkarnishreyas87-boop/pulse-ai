@@ -59,16 +59,16 @@ const AI = '<i class="tag ai">AI</i>', CODE = '<i class="tag det">CODE</i>';
 
 const ROWS = [
  {id:"kavita", cls:"r-kavita", name:"Kavita", sub:"Consultant", boxes:[
-   {id:"k1", c:0, h:`Kavita changes her domain list in Settings as client mandates shift. <b>No code, no deploy.</b>`},
-   {id:"k2", c:5, h:`Reads the brief in <b>under 10 minutes</b>: top 3, a <b>This week</b> line per domain, cards tagged <b>New benchmark / Surprising result / Reframes the problem</b> with Read / Skim / Client-flag. One click to arXiv.`}]},
+   {id:"k1", c:0, h:`Kavita changes her domain list in Settings as client mandates shift. <b>No code, no deploy, no passcode.</b>`},
+   {id:"k2", c:5, h:`Starts on the <b>overview</b> (top 3 and a photo tile per domain), then opens each <b>domain page</b>: the <b>This week</b> line and cards tagged New benchmark / Surprising result / Reframes the problem, with Read / Skim / Client-flag. Under 10 minutes.`}]},
  {id:"sched", cls:"r-sched", name:"Scheduler", sub:"Vercel Cron + GitHub Actions", boxes:[
    {id:"s1", c:0, h:`<b>Vercel Cron</b>, Monday 00:00 UTC, creates the week's job graph and starts on it. Six more Vercel Cron steps (00:15 to 04:30 UTC) keep working it. A GitHub Actions ticker is an optional backup.`},
    {id:"s2", c:1, h:`Each step claims jobs with a lease and runs them for up to ~4 min, then returns. No job makes more than one Gemini call; a job over 52 s is abandoned and retried.`},
    {id:"s3", c:5, h:`Cutoff Monday 02:00 UTC (7:30 IST): publishes what is ready, marked <b>partial</b>, then recomposes once if late domains finish. Stuck jobs are re-queued.`}]},
  {id:"settings", cls:"r-settings", name:"Settings", sub:"Next.js + Neon", boxes:[
    {id:"st1", c:1, h:`Domain form: name, arXiv categories, keywords, a <b>"what matters to me"</b> note, max papers.`},
-   {id:"st2", c:3, h:`${CODE} Validates with Zod, caps domains and papers, shows the query-expansion preview to approve.`},
-   {id:"st3", c:5, h:`Domains config saved to Neon Postgres (domains table). Next run picks it up automatically.`}]},
+   {id:"st2", c:3, h:`${CODE} Validates with Zod, caps domains and papers, shows the query-expansion preview. <b>No passcode</b> (owner's choice): saves and AI suggestions are rate limited.`},
+   {id:"st3", c:5, h:`Saved to Neon (domains table). The previous list is kept, so <b>Undo last change</b> restores it in one click. The next run picks it up.`}]},
  {id:"expand", cls:"r-gem", name:"Gemini Flash", sub:"Query expander", boxes:[
    {id:"x1", c:2, h:`Domain name + intent note. Runs only when Kavita clicks <b>Suggest</b>.`},
    {id:"x2", c:4, h:`${AI} Turns "AI agents" into categories, 6 to 10 search phrases and negative keywords.`},
@@ -105,8 +105,14 @@ const ROWS = [
  {id:"email", cls:"r-email", name:"Email", sub:"Resend", boxes:[
    {id:"e1", c:3, h:`${CODE} One email per week and variant, guarded before sending, plus a Resend idempotency key. Plain-text part; partial at the cutoff, then one <b>Updated</b> email.`},
    {id:"e2", c:5, h:`<b>Monday email</b>: top 3, a <b>This week</b> line per domain, signal tags, link to the full brief.`}]},
- {id:"web", cls:"r-web", name:"Web app", sub:"Brief page on Vercel", boxes:[
-   {id:"web1", c:5, h:`Latest brief + archive. Shows what it covers (including the look back) and banners for <b>sample, stale or partial</b> data.`}]},
+ {id:"web", cls:"r-web", name:"Web app", sub:"Overview page", boxes:[
+   {id:"web0", c:2, h:`Reads the newest week from the <b>briefs</b> table in Neon (or any past week).`},
+   {id:"web2", c:3, h:`${CODE} Renders the overview: hero with the week's stats, the top 3 stories, and a <b>photo tile per domain</b> (takeaway, paper count, verdict tally).`},
+   {id:"web1", c:5, h:`<b>Overview</b> at <b>/</b> (past weeks: /brief/&lt;week&gt;). Shows what the week covers and banners for <b>sample, stale or partial</b> data.`}]},
+ {id:"webd", cls:"r-web", name:"Web app", sub:"Domain pages", boxes:[
+   {id:"wd1", c:2, h:`<b>Unsplash photo</b> per domain (free licence, photographer credited), tinted in the domain's colour. Generated artwork for domains added later.`},
+   {id:"wd2", c:3, h:`${CODE} One page per domain: photo header, the <b>This week</b> takeaway, every paper (top stories first), and previous / next domain.`},
+   {id:"wd3", c:5, h:`<b>/domain/&lt;id&gt;</b> (past weeks: /brief/&lt;week&gt;/&lt;id&gt;). Sticky tabs switch between the overview and each domain.`}]},
  {id:"ops", cls:"r-ops", name:"Ops", sub:"Reliability", boxes:[
    {id:"o1", c:3, h:`${CODE} Records each job's AI calls, tokens, retries and malformed answers. Stuck jobs recover when their lease expires; old rows are swept.`},
    {id:"o2", c:5, h:`<b>/status</b>: job progress, AI totals, and problems with credentials redacted.`}]},
@@ -130,7 +136,7 @@ const EDGES = [
  ["r2","w2"],["w1","w2"],["w2","w3"],
  ["w3","t2"],["t1","t2"],["t2","t3"],["t3","c2"],["c1","c2"],["c2","c3"],
  ["c3","e1"],["e1","e2"],
- ["c3","web1"],
+ ["c3","web0"],["web0","web2"],["web2","web1"],["web1","wd2",{label:"open a domain"}],["wd1","wd2"],["wd2","wd3"],["wd3","k2"],
  ["e2","k2",{red:true,label:"Monday morning"}],
  ["web1","k2"],
  ["s2","s3",{red:true,label:"if not done by the 02:00 UTC cutoff"}],

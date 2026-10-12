@@ -256,4 +256,7 @@ test("Components Map makes no claim the code does not implement", () => {
   assert.match(map, /look(s)? back/i, "the lookback is described");
   assert.match(map, /already (covered|considered|shown)/i, "skipping papers from earlier briefs is described");
   assert.match(map, /what this week shows|This week/i, "the takeaway step is on the map");
+  assert.match(map, /Domain pages/, "the per-domain pages are on the map");
+  assert.match(map, /Undo last change/, "the undo safeguard is on the map");
+  assert.ok(!/admin passcode|Unlock/i.test(map), "no passcode is claimed (it was removed)");
 });
