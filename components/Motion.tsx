@@ -60,25 +60,3 @@ export function ReadingProgress() {
   }, []);
   return <div className="progress" style={{ transform: `scaleX(${p})` }} aria-hidden="true" />;
 }
-
-/** Highlights the domain link in the sticky bar for the section currently being read. */
-export function SectionSpy({ ids }: { ids: string[] }) {
-  useEffect(() => {
-    const links = new Map(ids.map((id) => [id, document.querySelector<HTMLElement>(`[data-spy="${id}"]`)]));
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          const link = links.get(e.target.id);
-          if (link) link.classList.toggle("is-current", e.isIntersecting);
-        }
-      },
-      { rootMargin: "-40% 0px -55% 0px" },
-    );
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
-  }, [ids]);
-  return null;
-}

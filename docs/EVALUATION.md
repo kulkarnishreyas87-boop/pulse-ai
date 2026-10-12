@@ -111,14 +111,27 @@ the state stored in Neon with nothing lost or repeated.
 signal, and 22% of papers do, so benchmark papers are over-represented. Lowering `RANK.benchmarkSignal` from 4 is
 the obvious lever; it should be decided with labelled data, not by eye.
 
+## First automatic Monday run in production (12 Oct 2026)
+
+No human involvement: Vercel Cron started the run, the follow-up cron steps drove it, the brief was published to
+Neon and the email went out.
+
+| Measure | Result |
+|---|---|
+| Run created by the cron | 00:24 UTC (Vercel Hobby fires "within the hour") |
+| Jobs | **73 of 73 done, 0 failed, 0 problems** |
+| Brief | week 41 (5 to 11 Oct), 1,691 words, published to the live site |
+| AI | 25 Gemini calls, 72,441 tokens, 0 retries, 0 malformed |
+| Wall clock | 30 min across the scheduled steps |
+| Email | sent at 00:54 UTC (6:24 am IST), Resend status **delivered** |
+
 ## Not yet measured
 
 - **Recall and precision against human judgement.** `eval/golden.json` lists 100 real papers; set each label to
   `must` or `should_not`, then `npm run eval`. About 30 labels is enough to be informative.
 - **The look back skipping last week's papers on a real second week.** Shown in simulation (`tests/fixes.test.ts`);
   the first real proof is the next Monday run.
-- **The deployed Monday cron** driving a run on Vercel (first real run: Monday 12 Oct 2026, 00:00 UTC). Real email delivery is
-  verified: a test email of the live brief reached the inbox.
+- Nothing further on delivery: the deployed Monday cron and real email are both verified (above).
 
 ## Test suite
 

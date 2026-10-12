@@ -42,7 +42,7 @@ Where can this system go wrong, what stops it, and what is the evidence? Evidenc
 | # | Failure | Mitigation | Evidence |
 |---|---|---|---|
 | 9 | **Function timeout or crash mid-job** | Jobs split so none makes more than one Gemini call; each job has a lease and a per-job timeout; abandoned jobs are retried | Test: killed worker recovered after lease expiry; hung call times out and is retried. Live: full week in 15 steps of at most 54s |
-| 10 | **Cron missed or fired twice** | Every scheduled step also creates the run if the first cron did not, and six follow-up cron steps keep working it; run creation and job claiming are atomic | Test: 6 racing ticks create one run; 16 racing Postgres workers produce one lease winner. **Open: the real Monday cron firing on Vercel is unverified until the first Monday run** |
+| 10 | **Cron missed or fired twice** | Every scheduled step also creates the run if the first cron did not, and six follow-up cron steps keep working it; run creation and job claiming are atomic | Test: 6 racing ticks create one run; 16 racing Postgres workers produce one lease winner. Live: the first automatic Monday run on Vercel (12 Oct 2026) finished 73 of 73 jobs and delivered the email |
 | 21 | **Storage error while recording a result** | A one-off error marks the job for retry; a full outage leaves the job protected by its lease and recovered later | Test (both cases) |
 | 23 | **Every source down** | If no domain produced any content, nothing is published and last week's brief stays in place | Test |
 | 24 | **Partial week at the cutoff** | At 02:00 UTC Monday the brief publishes with what is ready, marked partial; recomposed once if the rest finishes | Test |

@@ -388,3 +388,83 @@ main.wrap { padding-top: 36px; padding-bottom: 80px; }
   .how { padding: 22px; }
   .rank { font-size: 52px; }
 }
+
+/* ==========================================================================
+   Domain photos, overview tiles and domain pages
+   ========================================================================== */
+.domain-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.domains-overview { margin-top: 76px; }
+.tile-grid { display: grid; gap: 22px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .tile-grid { grid-template-columns: 1fr 1fr; } }
+.tile {
+  display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow);
+  transition: transform 0.3s cubic-bezier(.2,.7,.3,1), box-shadow 0.3s, border-color 0.3s;
+}
+.tile:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift); border-color: var(--dom-line); }
+.tile-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: hsl(var(--h) 40% 20%); }
+.tile-media .domain-photo, .tile-media .domain-art { width: 100%; height: 100%; transition: transform 0.9s cubic-bezier(.2,.7,.3,1); }
+.tile:hover .tile-media .domain-photo, .tile:hover .tile-media .domain-art { transform: scale(1.07); }
+.tile-shade {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgb(8 10 22 / 0) 35%, rgb(8 10 22 / 0.8) 100%),
+    linear-gradient(135deg, hsl(var(--h) 85% 45% / 0.5) 0%, hsl(var(--h) 85% 45% / 0) 60%);
+}
+.tile-head { position: absolute; left: 20px; right: 20px; bottom: 16px; color: #fff; }
+.tile-eyebrow { font-size: 11.5px; font-weight: 750; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+.tile-head h3 { font-size: clamp(1.3rem, 2.4vw, 1.6rem); font-weight: 800; letter-spacing: -0.025em; margin-top: 4px; text-shadow: 0 2px 16px rgb(0 0 0 / 0.35); }
+.tile-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.tile-count { margin: 0; font-weight: 650; color: var(--dom-strong); }
+.tile-take {
+  margin: 0; font-family: var(--serif); font-style: italic; font-size: 1.04rem; line-height: 1.55; color: var(--muted);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tally { list-style: none; display: flex; gap: 6px; flex-wrap: wrap; margin: 0; padding: 0; }
+.tally .verdict { font-size: 12px; padding: 4px 10px; }
+.tile-cta { margin-top: auto; padding-top: 4px; display: inline-flex; gap: 6px; align-items: center; font-weight: 700; color: var(--dom-strong); }
+.tile-cta .icon { transition: transform 0.2s; }
+.tile:hover .tile-cta .icon { transform: translate(3px, -3px); }
+
+/* Domain page header: the domain's photo, tinted in its colour, with a slow zoom */
+.dhero { position: relative; overflow: hidden; isolation: isolate; color: #fff; padding: 22px 0 54px; background: #0b0f24; }
+.dhero-media { position: absolute; inset: 0; z-index: -2; }
+.dhero-media .domain-photo, .dhero-media .domain-art { width: 100%; height: 100%; object-fit: cover; animation: kenburns 26s ease-in-out infinite alternate; }
+@keyframes kenburns { from { transform: scale(1.04); } to { transform: scale(1.14) translate(-2%, -1.5%); } }
+.dhero-shade {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(180deg, rgb(8 10 22 / 0.62) 0%, rgb(8 10 22 / 0.35) 38%, rgb(8 10 22 / 0.9) 100%),
+    linear-gradient(115deg, hsl(var(--h) 85% 38% / 0.6) 0%, hsl(var(--h) 85% 38% / 0) 62%);
+}
+.dhero .topbar { margin-bottom: 40px; }
+.dhero h1 { font-size: clamp(2.3rem, 5.8vw, 4.2rem); font-weight: 800; letter-spacing: -0.035em; margin: 6px 0 12px; max-width: 18ch; text-shadow: 0 4px 30px rgb(0 0 0 / 0.35); }
+.crumb { display: flex; width: fit-content; color: rgb(255 255 255 / 0.85); text-decoration: none; font-weight: 600; font-size: 14px; margin-bottom: 16px; transition: color 0.2s, transform 0.2s; }
+.crumb:hover { color: #fff; transform: translateX(-2px); }
+.photo-credit { font-size: 12px; color: var(--faint); margin: 8px 0 0; }
+.photo-credit a { color: inherit; text-underline-offset: 2px; }
+.photo-credit.on-dark { color: rgb(255 255 255 / 0.7); margin-top: 28px; }
+.domain-page { padding-top: 32px; }
+.domain-page .takeaway { margin-bottom: 28px; }
+.top-badge {
+  display: inline-flex; gap: 6px; align-items: center; font-size: 12px; font-weight: 750; padding: 5px 11px; border-radius: 999px; color: #fff;
+  background: linear-gradient(135deg, var(--dom), hsl(calc(var(--h) + 40) 80% 55%));
+  box-shadow: 0 6px 16px -8px var(--dom);
+}
+
+/* Previous / next domain */
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 64px; }
+@media (max-width: 640px) { .pager { grid-template-columns: 1fr; } }
+.pager-link {
+  display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; padding: 14px 16px; border-radius: 18px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+.pager-link:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); border-color: var(--dom-line, var(--line)); }
+.pager-next { justify-content: flex-end; text-align: right; }
+.pager-link small { display: block; color: var(--muted); font-size: 12px; font-weight: 650; }
+.pager-link strong { font-size: 1.05rem; color: var(--dom-strong, var(--text)); }
+.pager-thumb { flex: none; width: 76px; height: 56px; border-radius: 12px; overflow: hidden; }
+.pager-thumb .domain-photo, .pager-thumb .domain-art { width: 100%; height: 100%; }
+.tiles-credit { margin-top: 14px; }
