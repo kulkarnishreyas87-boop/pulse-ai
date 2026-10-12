@@ -28,6 +28,7 @@ npm run dev
 - [x] Step 7: email via Resend (`npm run email:preview` renders it without sending; `-- --send` sends one test)
 - [x] Step 8: hardening, failure-mode tests (`docs/FAILURE_MODES.md`, `docs/EVALUATION.md`, `docs/DEPLOY.md`)
 - [x] Search: a Search button in the top bar opens `/search`, which finds a topic, paper, author or domain across the last 26 weekly briefs (no AI call)
+- [x] Save for later: a Save button on every paper; `/saved` lists them (kept in the reader's browser, no account)
 
 ## Deploy
 

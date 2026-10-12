@@ -4,7 +4,7 @@ import { DOMAIN_PHOTOS, creditUrl, domainTheme, hueStyle } from "@/lib/theme";
 import { DomainPhoto, PhotoCredit } from "./DomainPhoto";
 import { PaperCard, VERDICT } from "./Paper";
 import { ReadingProgress, Reveal } from "./Motion";
-import { IconAlert, IconArrow, IconCheck, IconClock, IconLayers, IconPulse, IconSearch, IconSettings, IconSparkle } from "./Icons";
+import { IconAlert, IconArrow, IconCheck, IconClock, IconLayers, IconBookmark, IconPulse, IconSearch, IconSettings, IconSparkle } from "./Icons";
 
 /* ---------- shared helpers ---------- */
 
@@ -40,6 +40,9 @@ function Topbar({ home }: { home: string }) {
       <div className="topbar-actions">
         <Link href="/search" className="ghost-btn">
           <IconSearch /> Search
+        </Link>
+        <Link href="/saved" className="ghost-btn">
+          <IconBookmark /> Saved
         </Link>
         <Link href="/settings" className="ghost-btn">
           <IconSettings /> Edit domains
@@ -205,9 +208,9 @@ export function BriefOverview({ brief, weeks = [], latest = true }: { brief: Bri
               <p className="section-sub">The three papers most worth your time, across every domain.</p>
             </Reveal>
             <div className="glance-grid">
-              {top.map(({ c, theme }, i) => (
+              {top.map(({ c, sec, theme }, i) => (
                 <Reveal key={c.arxivId} delay={100 * i} className={i === 0 ? "glance-lead" : ""}>
-                  <PaperCard c={c} hue={theme.hue} kind={theme.kind} rank={i + 1} feature />
+                  <PaperCard c={c} hue={theme.hue} kind={theme.kind} rank={i + 1} feature save={{ week: brief.week, domainId: sec?.domainId ?? "", domainName: sec?.domainName ?? c.domain }} />
                 </Reveal>
               ))}
             </div>
@@ -313,6 +316,7 @@ export function DomainView({ brief, domainId, latest = true }: { brief: Brief; d
   const { featured, cards, total } = domainPapers(brief, s);
   const prev = brief.sections[index - 1];
   const next = brief.sections[index + 1];
+  const saveCtx = { week: brief.week, domainId: s.domainId, domainName: s.domainName };
 
   return (
     <>
@@ -371,12 +375,12 @@ export function DomainView({ brief, domainId, latest = true }: { brief: Brief; d
           <div className="paper-grid">
             {featured.map((c, i) => (
               <Reveal key={c.arxivId} delay={70 * i}>
-                <PaperCard c={c} hue={theme.hue} kind={theme.kind} topBadge />
+                <PaperCard c={c} hue={theme.hue} kind={theme.kind} topBadge save={saveCtx} />
               </Reveal>
             ))}
             {cards.map((c, i) => (
               <Reveal key={c.arxivId} delay={70 * (i + featured.length)}>
-                <PaperCard c={c} hue={theme.hue} kind={theme.kind} />
+                <PaperCard c={c} hue={theme.hue} kind={theme.kind} save={saveCtx} />
               </Reveal>
             ))}
           </div>

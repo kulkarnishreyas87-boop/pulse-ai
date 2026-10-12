@@ -1,6 +1,8 @@
 import type { BriefCard } from "@/lib/schema";
 import { hueStyle, type ArtKind } from "@/lib/theme";
 import { DomainArt } from "./DomainArt";
+import { SaveButton } from "./SaveButton";
+import type { SaveContext } from "@/lib/saved";
 import { IconArrow, IconBook, IconCompass, IconEye, IconFlag, IconSparkle, IconTarget, IconZap } from "./Icons";
 
 export const VERDICT = {
@@ -63,7 +65,7 @@ function Details({ c }: { c: BriefCard }) {
 }
 
 /** One paper. `feature` is the larger treatment with artwork, used for top stories. */
-export function PaperCard({ c, hue, kind, rank, feature = false, topBadge = false }: { c: BriefCard; hue: number; kind: ArtKind; rank?: number; feature?: boolean; topBadge?: boolean }) {
+export function PaperCard({ c, hue, kind, rank, feature = false, topBadge = false, save }: { c: BriefCard; hue: number; kind: ArtKind; rank?: number; feature?: boolean; topBadge?: boolean; save?: SaveContext }) {
   return (
     <article className={`paper ${feature ? "paper-feature" : ""} paper-${c.verdict}`} style={hueStyle(hue)} id={rank ? `top-${rank}` : undefined}>
       {feature && (
@@ -82,6 +84,7 @@ export function PaperCard({ c, hue, kind, rank, feature = false, topBadge = fals
           )}
           <Verdict v={c.verdict} />
           <Signals signals={c.signals} />
+          {save && <SaveButton card={c} ctx={save} />}
         </div>
         <h3 className="paper-title">
           <a href={c.url} target="_blank" rel="noreferrer">

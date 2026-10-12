@@ -60,7 +60,7 @@ const AI = '<i class="tag ai">AI</i>', CODE = '<i class="tag det">CODE</i>';
 const ROWS = [
  {id:"kavita", cls:"r-kavita", name:"Kavita", sub:"Consultant", boxes:[
    {id:"k1", c:0, h:`Kavita changes her domain list in Settings as client mandates shift. <b>No code, no deploy, no passcode.</b>`},
-   {id:"k2", c:5, h:`Starts on the <b>overview</b> (top 3 and a photo tile per domain), then opens each <b>domain page</b>: the <b>This week</b> line and cards tagged New benchmark / Surprising result / Reframes the problem, with Read / Skim / Client-flag. Under 10 minutes. <b>Search</b> finds any topic across past weeks.`}]},
+   {id:"k2", c:5, h:`Starts on the <b>overview</b> (top 3 and a photo tile per domain), then opens each <b>domain page</b>: the <b>This week</b> line and cards tagged New benchmark / Surprising result / Reframes the problem, with Read / Skim / Client-flag. Under 10 minutes. <b>Search</b> finds any topic across past weeks; <b>Save</b> keeps a paper for later.`}]},
  {id:"sched", cls:"r-sched", name:"Scheduler", sub:"Vercel Cron", boxes:[
    {id:"s1", c:0, h:`<b>Vercel Cron</b>, Monday 00:00 UTC, creates the week's job graph and starts on it. Twelve more Vercel Cron steps (00:10 to 06:00 UTC) keep working it; the later ones are slack for retries.`},
    {id:"s2", c:1, h:`Each step claims jobs with a lease and runs them for up to ~4 min, then returns. No job makes more than one Gemini call; a job over 52 s is abandoned and retried.`},
@@ -119,13 +119,18 @@ const ROWS = [
    {id:"ws1", c:2, h:`Reads the <b>last 26 weekly briefs</b> from the briefs table in Neon.`},
    {id:"ws2", c:3, h:`${CODE} Every word of the query must match; title matches rank first, then signals and domain, then the summary. Newer weeks win ties. <b>No AI call</b>.`},
    {id:"ws3", c:5, h:`<b>/search?q=…</b>: matching domain pages first, then papers with the words highlighted. Nothing found: a link to <b>add it as a domain</b>.`}]},
+ {id:"websv", cls:"r-web", name:"Web app", sub:"Saved articles", boxes:[
+   {id:"sv0", c:0, h:`Kavita presses <b>Save</b> on any paper (overview, domain page) to read it later.`},
+   {id:"sv1", c:2, h:`Kept in <b>her browser</b> on this device (no account needed): title, link, why it matters, domain, week.`},
+   {id:"sv2", c:3, h:`${CODE} Save again removes it. Newest first, at most 200, no duplicates; anything malformed in storage is dropped.`},
+   {id:"sv3", c:5, h:`<b>/saved</b>: her list with links to the paper and its domain page, and <b>Remove</b>. The Save button shows Saved everywhere.`}]},
  {id:"ops", cls:"r-ops", name:"Ops", sub:"Reliability", boxes:[
    {id:"o1", c:3, h:`${CODE} Records each job's AI calls, tokens, retries and malformed answers. Stuck jobs recover when their lease expires; old rows are swept.`},
    {id:"o2", c:5, h:`<b>/status</b>: job progress, AI totals, and problems with credentials redacted.`}]},
  {id:"eval", cls:"r-eval", name:"Evaluation", sub:"Offline, before submission", boxes:[
    {id:"ev1", c:0, h:`Run manually before each release.`},
    {id:"ev2", c:2, h:`Labelling file: <b>100 real papers</b> (human labels pending), plus a <b>community proxy</b>: on-topic papers with 10+ Hugging Face upvotes.`},
-   {id:"ev3", c:3, h:`Recall vs the community proxy (new vs old pipeline on the same week); 159 offline tests run on <b>every Vercel deploy</b>; adversarial checks against the real model.`},
+   {id:"ev3", c:3, h:`Recall vs the community proxy (new vs old pipeline on the same week); 163 offline tests run on <b>every Vercel deploy</b>; adversarial checks against the real model.`},
    {id:"ev4", c:5, h:`Results in <b>docs/EVALUATION.md</b>; risks in <b>docs/FAILURE_MODES.md</b>.`}]},
 ];
 
@@ -146,6 +151,7 @@ const EDGES = [
  ["e2","k2",{red:true,label:"Monday morning"}],
  ["web1","k2"],
  ["ws0","ws1"],["ws1","ws2"],["ws2","ws3"],
+ ["sv0","sv1"],["sv1","sv2"],["sv2","sv3"],
  ["s2","s3",{red:true,label:"if not done by the 03:00 UTC cutoff"}],
  ["ev1","ev2"],["ev2","ev3"],["ev3","ev4"],
 ];

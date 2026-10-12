@@ -167,6 +167,8 @@ instead of 6, with the wait between attempts capped at 10 minutes so they all fi
   status, in light and dark mode. Found: faint text at 2.9:1, some domain-coloured labels at 4.3:1, the green
   "Read in full" label at 4.1:1, search highlights in dark mode. All fixed; **0 violations** on every page in both modes.
   Domain text colour now passes 4.5:1 for every possible hue, so domains added later pass too.
+- **Saved articles** (Save on every paper, list at `/saved`): checked in the browser (save, unsave, remove,
+  empty state, phone width) and by 4 tests; the Saved page also passes the accessibility check.
 - **Search** (`/search`, button in the top bar): every published brief from the last 26 weeks, by topic, paper,
   author or domain; 7 tests. Checked by hand in the browser on desktop and phone width.
 
@@ -180,6 +182,6 @@ instead of 6, with the wait between attempts capped at 10 minutes so they all fi
 
 ## Test suite
 
-159 automated tests, no API keys or network needed: ranking, budget, composition, queue, retries, coverage across
-consecutive weeks, takeaways, email, security, rate limits, semantic recall, search, and the storage layer on a real
+163 automated tests, no API keys or network needed: ranking, budget, composition, queue, retries, coverage across
+consecutive weeks, takeaways, email, security, rate limits, semantic recall, search, saved articles, and the storage layer on a real
 in-process Postgres. They run on every Vercel build, so a failing test blocks the deploy.
