@@ -1,4 +1,5 @@
 # Pulse-AI
+n**Live:** https://pulse-ai-brief.vercel.app (also https://research-pulse-sandy.vercel.app)
 
 Weekly AI/ML research brief, organised by domain. All AI calls use Gemini Flash.
 Components Map: `docs/components-map.png`.
