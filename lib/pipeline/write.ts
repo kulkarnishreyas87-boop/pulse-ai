@@ -2,7 +2,7 @@ import type { BriefCard, Domain, Paper, WrittenCard } from "../schema";
 import { VerifyBatch, WriteBatch } from "../schema";
 import type { JsonLlm } from "../ai/gemini";
 import { VERIFY_SYSTEM, WRITE_SYSTEM, verifyPrompt, writePrompt } from "../ai/prompts";
-import { signalTags, type RankedPaper } from "./rank";
+import { effectiveHype, signalTags, type RankedPaper } from "./rank";
 
 const normQuote = (s: string) =>
   s.toLowerCase().replace(/[‘’“”"']/g, "").replace(/\s+/g, " ").trim();
@@ -161,7 +161,7 @@ export async function verifyAndBuild(
       out.whyItMatters = ""; // a "why" we cannot anchor to the abstract is not published
     }
     // High hype risk should not be pushed to a client as a flag.
-    if (out.verdict === "client_flag" && r.score.hype_risk >= 4) out.verdict = "skim";
+    if (out.verdict === "client_flag" && effectiveHype(r.score, `${r.paper.title} ${r.paper.abstract}`) >= 4) out.verdict = "skim";
     return toCard(r, out);
   });
 

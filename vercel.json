@@ -6,27 +6,51 @@
     },
     {
       "path": "/api/step?slot=1",
-      "schedule": "15 0 * * 1"
+      "schedule": "10 0 * * 1"
     },
     {
       "path": "/api/step?slot=2",
-      "schedule": "45 0 * * 1"
+      "schedule": "30 0 * * 1"
     },
     {
       "path": "/api/step?slot=3",
-      "schedule": "15 1 * * 1"
+      "schedule": "50 0 * * 1"
     },
     {
       "path": "/api/step?slot=4",
-      "schedule": "45 1 * * 1"
+      "schedule": "10 1 * * 1"
     },
     {
       "path": "/api/step?slot=5",
-      "schedule": "30 2 * * 1"
+      "schedule": "30 1 * * 1"
     },
     {
       "path": "/api/step?slot=6",
+      "schedule": "50 1 * * 1"
+    },
+    {
+      "path": "/api/step?slot=7",
+      "schedule": "10 2 * * 1"
+    },
+    {
+      "path": "/api/step?slot=8",
+      "schedule": "30 2 * * 1"
+    },
+    {
+      "path": "/api/step?slot=9",
+      "schedule": "50 2 * * 1"
+    },
+    {
+      "path": "/api/step?slot=10",
+      "schedule": "30 3 * * 1"
+    },
+    {
+      "path": "/api/step?slot=11",
       "schedule": "30 4 * * 1"
+    },
+    {
+      "path": "/api/step?slot=12",
+      "schedule": "0 6 * * 1"
     }
   ]
 }

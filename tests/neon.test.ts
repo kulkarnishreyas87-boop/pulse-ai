@@ -1,7 +1,10 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
-import { SCHEMA, setDb, getDb, lazyDb, type Db } from "../lib/db/client";
+import { schemaSql, setDb, getDb, lazyDb, type Db } from "../lib/db/client";
+
+// These tests query bare table names, so they run against the "public" schema of their in-process Postgres.
+process.env.DB_SCHEMA = "public";
 import { PgKv } from "../lib/db/pgkv";
 import { Domain, type Paper } from "../lib/schema";
 import type { JsonLlm } from "../lib/ai/gemini";
@@ -37,7 +40,7 @@ const reset = async () => {
 test("getDb creates the tables through the app's own path, and lazyDb works on first use", async () => {
   const tables = (await raw.query(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`)).map((r) => r.table_name);
   for (const t of ["kv", "briefs", "domains"]) assert.ok(tables.includes(t), `missing table ${t}`);
-  assert.ok(SCHEMA.length >= 5);
+  assert.ok(schemaSql().length >= 6);
   const lazy = lazyDb()!;
   assert.equal((await lazy.query("SELECT 1 AS n"))[0].n, 1);
 });
@@ -55,7 +58,7 @@ test("domains: defaults when empty, then saved to Postgres and read back in orde
   assert.ok(defaultDomains.length >= 1);
 });
 
-test("undo: every save keeps the previous list, and undo swaps them back (twice re-applies)", async () => {
+test("undo: every save keeps the previous list, and each undo steps one version further back", async () => {
   await reset();
   const mk = (id: string, name: string) => Domain.parse({ id, name, keywords: ["abc def"], arxivCats: ["cs.AI"] });
   await assert.rejects(undoDomains(), /no earlier version/, "nothing to undo before the first save");
@@ -65,10 +68,12 @@ test("undo: every save keeps the previous list, and undo swaps them back (twice 
   await saveDomains([mk("a", "Alpha"), mk("b", "Beta")]);
   assert.deepEqual((await getPreviousDomains())!.map((d) => d.id), ["a"]);
   const restored = await undoDomains();
-  assert.deepEqual(restored.map((d) => d.id), ["a"]);
+  assert.deepEqual(restored.domains.map((d) => d.id), ["a"]);
+  assert.equal(restored.remaining, 1);
   assert.deepEqual((await getDomains()).domains.map((d) => d.id), ["a"], "the live list is the restored one");
   await undoDomains();
-  assert.deepEqual((await getDomains()).domains.map((d) => d.id), ["a", "b"], "undo again re-applies the change");
+  assert.deepEqual((await getDomains()).domains.map((d) => d.id), defaultDomains.map((d) => d.id), "a second undo goes back to the starter list");
+  await assert.rejects(undoDomains(), /no earlier version/, "history exhausted");
 });
 
 test("a vandal deleting every domain is one click from recovery", async () => {
@@ -131,6 +136,7 @@ const fakeLlm = ((async (req: any) => {
 const sent: any[] = [];
 const pgCtx = (clock: { t: number }): Ctx => ({
   ...defaultCtx(), // real wiring: PgKv from defaultKv(), real publish into the briefs table
+  embed: async (texts: string[]) => texts.map((s) => [s.length % 7, 1, s.includes("rag") ? 1 : 0]), // offline stand-in for Gemini embeddings
   llm: fakeLlm,
   now: () => clock.t,
   sources: {

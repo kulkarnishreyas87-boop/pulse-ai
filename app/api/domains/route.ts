@@ -1,23 +1,23 @@
 import { NextResponse } from "next/server";
-import { rateLimited } from "@/lib/admin";
+import { LIMITS, overLimit } from "@/lib/ratelimit";
 import { hasDb } from "@/lib/db/client";
-import { DomainList, MAX_DOMAINS, getDomains, getPreviousDomains, saveDomains } from "@/lib/domains";
+import { DomainList, MAX_DOMAINS, getDomainHistory, getDomains, saveDomains } from "@/lib/domains";
 
 export const dynamic = "force-dynamic";
 
 /** The domain list, plus whether it can be edited and whether there is an earlier version to undo to. */
 export async function GET() {
-  const [{ domains, source }, previous] = await Promise.all([getDomains(), getPreviousDomains()]);
+  const [{ domains, source }, history] = await Promise.all([getDomains(), getDomainHistory()]);
   const writable = hasDb() || process.env.NODE_ENV !== "production";
-  return NextResponse.json({ domains, source, max: MAX_DOMAINS, writable, hasPrevious: previous !== null });
+  return NextResponse.json({ domains, source, max: MAX_DOMAINS, writable, hasPrevious: history.length > 0, historyDepth: history.length });
 }
 
 /**
  * Saves the domain list. There is no passcode (the owner's choice); instead saves are validated,
- * rate-limited, and each one keeps the previous list so it can be undone.
+ * rate-limited per caller across all server instances, and the last 10 versions are kept for undo.
  */
 export async function PUT(req: Request) {
-  if (rateLimited("domains-save", 20, 60_000)) {
+  if (await overLimit(LIMITS.save, req.headers)) {
     return NextResponse.json({ error: "Too many saves in a short time. Wait a minute and try again." }, { status: 429 });
   }
   let body: unknown;

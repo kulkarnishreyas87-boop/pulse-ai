@@ -145,6 +145,17 @@ test("a failing job backs off, retries, and finally gives up after its attempt l
   assert.match(final.error!, /boom/);
 });
 
+test("retry backoff is capped at 10 minutes, so all fetch attempts fit well before the cutoff", async () => {
+  const { ctx } = mkCtx();
+  await createRun(ctx.kv, win, domains, T0);
+  const run = (await getRun(ctx.kv, WEEK))!;
+  const job = (await claimNext(ctx.kv, run, "w", T0))!;
+  await markFailed(ctx.kv, { ...job, attempts: maxAttempts(job.kind) - 1 }, new Error("429"), T0);
+  const after = (await listJobs(ctx.kv, run)).find((j) => j.id === job.id)!;
+  assert.equal(after.status, "pending");
+  assert.ok(after.notBefore - T0 <= 10 * 60_000);
+});
+
 test("arXiv down for a domain: the week still publishes, flagged stale, from Hugging Face alone", async () => {
   const { ctx, clock, published } = mkCtx();
   ctx.sources.arxivDay = async () => {

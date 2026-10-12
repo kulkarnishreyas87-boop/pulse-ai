@@ -8,11 +8,14 @@ Everything below needs your accounts. Do them in order.
 2. Copy the **pooled** connection string (the host contains `-pooler`).
 3. Put it in `.env.local` as `DATABASE_URL=...`, then:
 
+Locally, everything uses an isolated `dev` schema. To work on the live tables from your machine (for example the
+import below), prefix the command with `DB_SCHEMA=public`.
+
 ```bash
-npm run db -- migrate            # creates the tables
-npm run db -- import-brief 2026-W40   # loads the real brief so the site has data on day one
-npm run db -- import-domains     # optional: loads the starter domains
-npm run db -- status             # confirm
+DB_SCHEMA=public npm run db -- migrate            # creates the tables
+DB_SCHEMA=public npm run db -- import-brief 2026-W40   # loads the real brief so the site has data on day one
+DB_SCHEMA=public npm run db -- import-domains     # optional: loads the starter domains
+DB_SCHEMA=public npm run db -- status             # confirm
 ```
 
 ## 2. GitHub
@@ -21,6 +24,8 @@ Create a repository and push the contents of this folder. `.env.local` and `.cac
 (`.github/workflows/ci.yml`) runs typecheck, tests, build and audit with no secrets.
 
 ## 3. Vercel
+
+Every Vercel build runs the full test suite first (`vercel-build` in `package.json`), so a failing test blocks the deploy.
 
 Import the repository. Add these **Environment Variables** (Production):
 

@@ -3,7 +3,7 @@ import type { WeekWindow } from "../week";
 import type { Kv } from "./kv";
 import { FETCH_DAYS } from "../coverage";
 
-export type JobKind = "hf" | "fetch" | "prefilter" | "judge" | "write" | "verify" | "synth" | "compose" | "email";
+export type JobKind = "hf" | "fetch" | "embed" | "prefilter" | "judge" | "write" | "verify" | "synth" | "compose" | "email";
 export type JobStatus = "pending" | "running" | "done" | "failed";
 
 export interface Job {
@@ -34,13 +34,16 @@ export interface Run {
 }
 
 export const MAX_ATTEMPTS = 3;
-/** Source fetches get more tries: arXiv is often slow on Monday mornings, and the cutoff leaves hours of slack. */
-export const maxAttempts = (kind: JobKind) => (kind === "fetch" || kind === "hf" ? 6 : MAX_ATTEMPTS);
+/**
+ * Source fetches get more tries: arXiv is often slow or rate limiting (429) on Monday mornings, a fetch is cheap to
+ * retry, and twelve cron steps before the cutoff leave room for it.
+ */
+export const maxAttempts = (kind: JobKind) => (kind === "fetch" || kind === "hf" ? 10 : kind === "embed" ? 4 : MAX_ATTEMPTS);
 export const LEASE_SEC = 100; // longer than a step (60s), so a killed step's job is picked up again soon after
 export const DATA_TTL = 60 * 60 * 24 * 21;
-export const CUTOFF_HOURS = 2; // hours after the week ends (Monday 02:00 UTC, about 07:30 IST)
+export const CUTOFF_HOURS = 3; // hours after the week ends (Monday 03:00 UTC, about 08:30 IST)
 
-const ORDER: JobKind[] = ["hf", "fetch", "prefilter", "judge", "write", "verify", "synth", "compose", "email"];
+const ORDER: JobKind[] = ["hf", "fetch", "embed", "prefilter", "judge", "write", "verify", "synth", "compose", "email"];
 
 export const keys = {
   run: (w: string) => `run:${w}`,
@@ -63,11 +66,13 @@ export function buildSkeleton(week: string, domains: Domain[], cutoffAt: number)
   const finals: string[] = [];
   for (const d of domains) {
     const fetches = Array.from({ length: FETCH_DAYS }, (_, i) => mk(week, "fetch", [], { domainId: d.id, arg: i }));
-    const pre = mk(week, "prefilter", [...fetches.map((f) => f.id), "hf"], { domainId: d.id });
+    // each day's papers are embedded in their own small job, so no single job risks the time limit
+    const embeds = fetches.map((f) => mk(week, "embed", [f.id], { domainId: d.id, arg: f.arg }));
+    const pre = mk(week, "prefilter", [...fetches.map((f) => f.id), ...embeds.map((e) => e.id), "hf"], { domainId: d.id });
     const write = mk(week, "write", [pre.id], { domainId: d.id });
     const verify = mk(week, "verify", [write.id], { domainId: d.id });
     const synth = mk(week, "synth", [verify.id], { domainId: d.id });
-    jobs.push(...fetches, pre, write, verify, synth);
+    jobs.push(...fetches, ...embeds, pre, write, verify, synth);
     finals.push(synth.id);
   }
   const compose = mk(week, "compose", finals, { forceAt: cutoffAt });
@@ -158,7 +163,8 @@ export async function markFailed(kv: Kv, job: Job, err: unknown, now: number) {
   const final = job.attempts >= maxAttempts(job.kind);
   const next: Job = final
     ? { ...job, status: "failed", error: msg, finishedAt: now }
-    : { ...job, status: "pending", error: msg, notBefore: now + 20_000 * 2 ** (job.attempts - 1) };
+    : // capped, so even ten attempts (about 50 minutes) give up well before the cutoff
+      { ...job, status: "pending", error: msg, notBefore: now + Math.min(20_000 * 2 ** (job.attempts - 1), 10 * 60_000) };
   await kv.set(keys.job(job.week, job.id), next, DATA_TTL);
   await kv.del(keys.lease(job.week, job.id));
 }

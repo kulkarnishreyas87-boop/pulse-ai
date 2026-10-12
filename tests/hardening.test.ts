@@ -120,6 +120,14 @@ test("arXiv: 429 then 503 then success returns the papers after retrying", async
   assert.equal((result as any).papers.length, 3);
 });
 
+test("arXiv: a 429 waits for Retry-After before trying again (quick retries only extend the block)", async () => {
+  const t0 = Date.now();
+  const { result, calls } = await withFetch([new Response("slow down", { status: 429, headers: { "Retry-After": "1" } }), xmlRes()], () => fetchArxivDay(dom, win, 0));
+  assert.equal(calls, 2);
+  assert.equal((result as any).papers.length, 3);
+  assert.ok(Date.now() - t0 >= 900, "retried before Retry-After elapsed");
+});
+
 test("arXiv: network errors and timeouts are retried", async () => {
   const { result, calls } = await withFetch([new TypeError("fetch failed"), Object.assign(new Error("timed out"), { name: "TimeoutError" }), xmlRes()], () => fetchArxivDay(dom, win, 0));
   assert.equal(calls, 3);
@@ -179,7 +187,7 @@ test("a hung Gemini call times out the job and queues a retry instead of wedging
 function flakyKv(inner: MemoryKv, when: (k: string, v: any) => boolean, failures: number) {
   let left = failures;
   const kv: Kv = {
-    get: (k) => inner.get(k), mget: (k) => inner.mget(k), setNx: (k, v, t) => inner.setNx(k, v, t), del: (k) => inner.del(k),
+    get: (k) => inner.get(k), mget: (k) => inner.mget(k), setNx: (k, v, t) => inner.setNx(k, v, t), del: (k) => inner.del(k), incr: (k, t) => inner.incr(k, t),
     set: async (k, v, ttl) => {
       if (left > 0 && when(k, v)) {
         left--;

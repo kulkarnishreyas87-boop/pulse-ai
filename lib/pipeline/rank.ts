@@ -18,7 +18,8 @@ import type { ScoredPaper } from "./prefilter";
  */
 export const RANK = {
   weights: { signal: 0.4, evidence: 0.35, relevance: 0.25 },
-  benchmarkSignal: 4, // introducing a reusable benchmark counts like a clearly notable finding
+  benchmarkSignal: 4, // a new benchmark backed by solid evidence (evidence 4+) counts like a clearly notable finding
+  weakBenchmarkSignal: 3, // ...one with thin evidence is only moderately notable (stops benchmark papers being over-rewarded)
   hypePenaltyPerPoint: 0.25, // hype_risk 1 costs nothing; each point above costs this much
   attentionBonusPerPoint: 0.25, // attention is rescaled to 0..5, so the bonus is at most 1.25
   minQuality: 3.3,
@@ -39,7 +40,25 @@ export interface RankedPaper {
 
 /** The strongest of the three named signals, on a 1..5 scale. */
 export function signalScore(s: PaperScore): number {
-  return Math.max(s.surprising_result, s.reframing, s.introduces_benchmark ? RANK.benchmarkSignal : 1);
+  const bench = s.introduces_benchmark ? (s.evidence_quality >= 4 ? RANK.benchmarkSignal : RANK.weakBenchmarkSignal) : 1;
+  return Math.max(s.surprising_result, s.reframing, bench);
+}
+
+/*
+ * Hype check in code, alongside the model's own hype_risk. On real abstracts the model almost always
+ * answered 1, so promotional wording in the abstract is counted directly. Strong phrases count double.
+ */
+const STRONG_HYPE = /\b(unprecedented|revolutionar(y|ize|izes)|groundbreaking|game[- ]chang(er|ing)|paradigm shift|breakthrough|human[- ]level|superhuman|agi\b|first[- ]ever|unparalleled|solves? (the|this|all)|outperforms? all|beats? all|state[- ]of[- ]the[- ]art (on|across) (all|every))/gi;
+const MILD_HYPE = /\b(state[- ]of[- ]the[- ]art|dramatically|remarkabl[ey]|substantially outperform|significantly outperform|novel paradigm|transformative)\b/gi;
+
+export function lexicalHype(text: string): number {
+  const points = 2 * (text.match(STRONG_HYPE)?.length ?? 0) + (text.match(MILD_HYPE)?.length ?? 0);
+  return points === 0 ? 1 : points === 1 ? 2 : points <= 3 ? 3 : points <= 5 ? 4 : 5;
+}
+
+/** The hype used for ranking: the stronger of the model's judgement and the wording check. */
+export function effectiveHype(s: PaperScore, text = ""): number {
+  return Math.max(s.hype_risk, text ? lexicalHype(text) : 1);
 }
 
 /** Labels shown on the card, so the reader sees WHY a paper is here in the problem statement's own terms. */
@@ -51,21 +70,23 @@ export function signalTags(s: PaperScore): string[] {
   return tags;
 }
 
-export function qualityScore(s: PaperScore): number {
+export function qualityScore(s: PaperScore, text = ""): number {
   const w = RANK.weights;
-  return w.signal * signalScore(s) + w.evidence * s.evidence_quality + w.relevance * s.relevance - RANK.hypePenaltyPerPoint * (s.hype_risk - 1);
+  return w.signal * signalScore(s) + w.evidence * s.evidence_quality + w.relevance * s.relevance - RANK.hypePenaltyPerPoint * (effectiveHype(s, text) - 1);
 }
 
 export function rankPapers(items: { paper: ScoredPaper; score: PaperScore }[]): RankedPaper[] {
   return items
     .map(({ paper, score }) => {
-      const quality = qualityScore(score);
+      const text = `${paper.title} ${paper.abstract}`;
+      const quality = qualityScore(score, text);
+      const hype = effectiveHype(score, text);
       const attention5 = Math.min(5, (paper.prefilter.attention / RANK.attentionMax) * 5);
       const total = quality + RANK.attentionBonusPerPoint * attention5;
       const passes = score.relevance >= RANK.minRelevance && quality >= RANK.minQuality;
       const tags = signalTags(score);
       const why = passes
-        ? `quality ${quality.toFixed(2)} + attention ${(RANK.attentionBonusPerPoint * attention5).toFixed(2)} (signal ${signalScore(score)}${tags.length ? ` [${tags.join(", ")}]` : ""}, evidence ${score.evidence_quality}, relevance ${score.relevance}, hype ${score.hype_risk})`
+        ? `quality ${quality.toFixed(2)} + attention ${(RANK.attentionBonusPerPoint * attention5).toFixed(2)} (signal ${signalScore(score)}${tags.length ? ` [${tags.join(", ")}]` : ""}, evidence ${score.evidence_quality}, relevance ${score.relevance}, hype ${hype})`
         : score.relevance < RANK.minRelevance
           ? `dropped: relevance ${score.relevance} < ${RANK.minRelevance}`
           : `dropped: quality ${quality.toFixed(2)} < ${RANK.minQuality} (signal ${signalScore(score)}, evidence ${score.evidence_quality}, relevance ${score.relevance})`;

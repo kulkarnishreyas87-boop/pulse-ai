@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { rateLimited } from "@/lib/admin";
+import { LIMITS, overLimit } from "@/lib/ratelimit";
 import { expandDomain } from "@/lib/ai/expand";
 import { generateJson } from "@/lib/ai/gemini";
 
@@ -11,7 +11,11 @@ const Body = z.object({ name: z.string().trim().min(2).max(80), intentNote: z.st
 
 /** Proposes search settings for a domain. Nothing is saved: the user reviews and edits the proposal. */
 export async function POST(req: Request) {
-  if (rateLimited("expand")) return NextResponse.json({ error: "Too many requests. Wait a minute." }, { status: 429 });
+  // Settings is open, so both a per-caller limit and a shared daily cap protect the Gemini quota.
+  if (await overLimit(LIMITS.suggest, req.headers)) return NextResponse.json({ error: "Too many requests. Wait a minute." }, { status: 429 });
+  if (await overLimit(LIMITS.suggestDaily, req.headers)) {
+    return NextResponse.json({ error: "Today's limit for AI suggestions has been reached. You can still type search terms by hand." }, { status: 429 });
+  }
 
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Enter a domain name (2 to 80 characters)." }, { status: 400 });

@@ -1,6 +1,7 @@
 import type { Brief, Domain, Paper } from "../schema";
 import { generateJson, type JsonLlm } from "../ai/gemini";
 import { fetchArxivDay } from "../sources/arxiv";
+import { cosine, embedTexts, paperText, profileText, type Embedder } from "../ai/embed";
 import { fetchHf, type HfResult } from "../sources/hf";
 import { dedupe, prefilter } from "../pipeline/prefilter";
 import { judgePapers, scoreKey, BATCH_SIZE, type ScoreCache } from "../pipeline/judge";
@@ -27,9 +28,13 @@ export interface Ctx {
   now: () => number;
   sources: {
     arxivDay: (d: Domain, win: WeekWindow, i: number) => Promise<{ papers: Paper[] }>;
+    /** The domain's categories WITHOUT the keyword filter, so papers using other words are not missed. Optional. */
+    arxivDayBroad?: (d: Domain, win: WeekWindow, i: number) => Promise<{ papers: Paper[] }>;
     hf: (win: WeekWindow) => Promise<HfResult>;
   };
   publish: (brief: Brief) => Promise<void>;
+  /** Gemini embeddings for semantic recall. Optional: without it the shortlist uses keywords only. */
+  embed?: Embedder;
   emailConfig: () => EmailConfig;
   sendEmail: (cfg: Extract<EmailConfig, { ready: true }>, msg: EmailMessage) => Promise<{ id: string }>;
 }
@@ -59,7 +64,13 @@ export function defaultCtx(): Ctx {
   const kv = defaultKv();
   const dry = process.env.EMAIL_DRY_RUN === "1";
   return {
-    kv, llm: generateJson, now: Date.now, sources: { arxivDay: fetchArxivDay, hf: fetchHf }, publish: publishDefault,
+    kv, llm: generateJson, now: Date.now, publish: publishDefault, embed: embedTexts,
+    sources: {
+      arxivDay: fetchArxivDay,
+      // category-wide fetch, capped per day; skipped for domains without categories (it would be all of arXiv)
+      arxivDayBroad: (d, w, i) => (d.arxivCats.length ? fetchArxivDay({ ...d, keywords: [] }, w, i, 200) : Promise.resolve({ papers: [] })),
+      hf: fetchHf,
+    },
     emailConfig: () => emailConfig(),
     sendEmail: dry ? dryRunSender(kv) : (cfg, msg) => sendViaResend(cfg.apiKey, msg),
   };
@@ -95,10 +106,41 @@ const hf: Handler = async (_job, run, ctx) => {
 };
 
 const fetchDay: Handler = async (job, run, ctx) => {
-  const r = await ctx.sources.arxivDay(domainOf(run, job.domainId), win(run), dayOffset(job.arg!));
-  // Raw day data is large and only needed by prefilter (and its retries), so it expires after 3 days, not 3 weeks.
-  await ctx.kv.set(keys.data(run.week, job.domainId!, `day${job.arg}`), r.papers, 3 * 24 * 3600);
-  return `${r.papers.length} papers`;
+  const domain = domainOf(run, job.domainId);
+  const r = await ctx.sources.arxivDay(domain, win(run), dayOffset(job.arg!));
+  // The keyword query must succeed (it throws and the job retries); the broad query is a recall bonus.
+  let broad: Paper[] = [];
+  let broadNote = "";
+  if (ctx.sources.arxivDayBroad) {
+    try {
+      broad = (await ctx.sources.arxivDayBroad(domain, win(run), dayOffset(job.arg!))).papers;
+    } catch (e) {
+      broadNote = " (category-wide fetch failed: keywords only)";
+    }
+  }
+  const merged = dedupe([...r.papers, ...broad]);
+  // Raw day data is large and only needed by embed and prefilter (and their retries), so it expires after 3 days.
+  await ctx.kv.set(keys.data(run.week, domain.id, `day${job.arg}`), merged, 3 * 24 * 3600);
+  return `${r.papers.length} keyword + ${merged.length - r.papers.length} category-wide papers${broadNote}`;
+};
+
+/** Similarity of each of the day's papers to the domain description. Stores numbers only, not vectors. */
+const embedJob: Handler = async (job, run, ctx) => {
+  if (!ctx.embed) return "skipped: no embedder";
+  const domain = domainOf(run, job.domainId);
+  const papers = await ctx.kv.get<Paper[]>(keys.data(run.week, domain.id, `day${job.arg}`));
+  if (!papers?.length) return "nothing to embed";
+  const profileKey = keys.data(run.week, domain.id, "profile");
+  let profile = await ctx.kv.get<number[]>(profileKey);
+  if (!profile) {
+    [profile] = await ctx.embed([profileText(domain)]);
+    await ctx.kv.set(profileKey, profile, DATA_TTL);
+  }
+  const vecs = await ctx.embed(papers.map(paperText));
+  const sims: Record<string, number> = {};
+  papers.forEach((p, i) => (sims[p.id] = Math.round(cosine(profile!, vecs[i]) * 10000) / 10000));
+  await ctx.kv.set(keys.data(run.week, domain.id, `sim${job.arg}`), sims, 3 * 24 * 3600);
+  return `${papers.length} papers embedded`;
 };
 
 /** Merges the seven days and Hugging Face, prefilters, and spawns one judge job per batch of the shortlist. */
@@ -107,7 +149,9 @@ const prefilterJob: Handler = async (job, run, ctx) => {
   const days = await ctx.kv.mget<Paper[]>(Array.from({ length: FETCH_DAYS }, (_, i) => keys.data(run.week, domain.id, `day${i}`)));
   const missingDays = days.filter((d) => d === null).length;
   const hfData = await ctx.kv.get<{ signals: [string, any][]; papers: Paper[] }>(keys.data(run.week, "hf"));
-  const arxivPapers = days.flatMap((d) => d ?? []);
+  const simMaps = await ctx.kv.mget<Record<string, number>>(Array.from({ length: FETCH_DAYS }, (_, i) => keys.data(run.week, domain.id, `sim${i}`)));
+  const simOf = new Map(simMaps.flatMap((m) => Object.entries(m ?? {})));
+  const arxivPapers = days.flatMap((d) => d ?? []).map((p) => (simOf.has(p.id) ? { ...p, sim: simOf.get(p.id) } : p));
 
   if (missingDays === FETCH_DAYS && !hfData) throw new Error("No arXiv days and no Hugging Face data available");
 
@@ -306,5 +350,5 @@ const emailJob: Handler = async (_job, run, ctx) => {
 };
 
 export const HANDLERS: Record<Job["kind"], Handler> = {
-  hf, fetch: fetchDay, prefilter: prefilterJob, judge: judgeJob, write: writeJob, verify: verifyJob, synth: synthJob, compose: composeJob, email: emailJob,
+  hf, fetch: fetchDay, embed: embedJob, prefilter: prefilterJob, judge: judgeJob, write: writeJob, verify: verifyJob, synth: synthJob, compose: composeJob, email: emailJob,
 };

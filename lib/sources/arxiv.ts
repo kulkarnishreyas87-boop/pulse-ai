@@ -70,6 +70,15 @@ async function fetchPage(query: string, start: number): Promise<string> {
       if (res.ok) return await res.text();
       lastErr = new Error(`arXiv HTTP ${res.status}`);
       if (res.status !== 429 && res.status < 500) break; // not retryable
+      if (res.status === 429) {
+        // Rate limited: quick retries only extend the block. Honour Retry-After, else wait at least 5x the normal backoff,
+        // and hold every later request in this process back by the same amount.
+        const retryAfter = Number(res.headers.get("retry-after")) * 1000 || 0;
+        const pause = Math.max(retryAfter, arxivTuning.backoffMs * 5 * 2 ** attempt);
+        lastRequestAt = Date.now() + pause - arxivTuning.minGapMs;
+        if (Date.now() + pause - started > arxivTuning.retryWindowMs) break; // leave it to the job queue's retry
+        continue;
+      }
     } catch (e) {
       lastErr = e;
     }

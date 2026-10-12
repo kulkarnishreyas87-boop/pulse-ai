@@ -249,7 +249,9 @@ test("takeaway counts toward the 10-minute word budget", () => {
 
 test("Components Map makes no claim the code does not implement", () => {
   const map = readFileSync(join(process.cwd(), "docs", "components-map.html"), "utf8");
-  assert.ok(!/embedding \+ keyword|by embedding/i.test(map), "no embedding claim (not built)");
+  assert.match(map, /Gemini embeddings/, "embedding recall is on the map (it is built: lib/ai/embed.ts)");
+  assert.ok(!/no embeddings/i.test(map), "the map no longer claims there are no embeddings");
+  assert.ok(!/02:00 UTC cutoff|Cutoff Monday 02:00/.test(map), "the cutoff is 03:00 UTC");
   assert.ok(!/≤ 2,000 words/.test(map), "budget is 1,800 words");
   assert.ok(!/0\.30 novelty/.test(map), "old ranking formula is gone");
   assert.ok(!/Fixed window <b>Mon 00:00 to Sun 23:59 UTC<\/b>, stored/.test(map), "window now includes the lookback");

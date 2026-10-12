@@ -16,7 +16,9 @@
     "test": "node --import tsx --test tests/*.test.ts",
     "db": "node --env-file-if-exists=.env.local --import tsx scripts/db.ts",
     "rubric-check": "node --env-file-if-exists=.env.local --import tsx scripts/rubric-check.ts",
-    "neon-check": "node --env-file-if-exists=.env.local --import tsx scripts/neon-check.ts"
+    "neon-check": "node --env-file-if-exists=.env.local --import tsx scripts/neon-check.ts",
+    "vercel-build": "npm test && next build",
+    "proxy-eval": "node --env-file-if-exists=.env.local --import tsx scripts/proxy-eval.ts"
   },
   "dependencies": {
     "@google/genai": "^1.0.0",

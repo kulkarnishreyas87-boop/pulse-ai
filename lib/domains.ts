@@ -3,7 +3,7 @@ import defaults from "@/data/domains.default.json";
 import { Domain } from "./schema";
 import { isKnownCategory } from "./arxivCategories";
 import { hasDb, requireDb } from "./db/client";
-import { loadDomains, loadDomainsBackup, replaceDomains, saveDomainsBackup } from "./db/repo";
+import { loadDomainHistory, loadDomains, replaceDomains, saveDomainHistory } from "./db/repo";
 
 export const MAX_DOMAINS = 10;
 
@@ -70,9 +70,11 @@ export async function getDomains(): Promise<{ domains: Domain[]; source: DomainS
   return { domains: defaultDomains, source: "default" };
 }
 
-async function devBackupFile() {
+export const HISTORY_DEPTH = 10;
+
+async function devHistoryFile() {
   const { join } = await import("node:path");
-  return join(process.cwd(), ".cache", "domains.previous.json");
+  return join(process.cwd(), ".cache", "domains.history.json");
 }
 
 /** Writes the list where getDomains reads it from. Throws if there is nowhere durable to write. */
@@ -92,50 +94,60 @@ async function writeList(valid: Domain[]): Promise<DomainSource> {
   throw new Error("No database is configured. Add DATABASE_URL (your Neon connection string) to save domains.");
 }
 
-async function writeBackup(list: Domain[]): Promise<void> {
-  if (hasDb()) return saveDomainsBackup(await requireDb(), list);
+/** Earlier versions of the list, newest last. Invalid entries are dropped rather than trusted. */
+export async function getDomainHistory(): Promise<Domain[][]> {
+  let raw: unknown[] = [];
+  try {
+    if (hasDb()) raw = await loadDomainHistory(await requireDb());
+    else if (process.env.NODE_ENV !== "production") {
+      const { readFile } = await import("node:fs/promises");
+      raw = JSON.parse(await readFile(await devHistoryFile(), "utf8"));
+    }
+  } catch {
+    raw = [];
+  }
+  return raw.flatMap((x) => {
+    const p = DomainList.safeParse(x);
+    return p.success ? [p.data] : [];
+  });
+}
+
+async function writeHistory(history: Domain[][]): Promise<void> {
+  const trimmed = history.slice(-HISTORY_DEPTH);
+  if (hasDb()) return saveDomainHistory(await requireDb(), trimmed);
   if (process.env.NODE_ENV !== "production") {
     const { mkdir, writeFile } = await import("node:fs/promises");
     const { dirname } = await import("node:path");
-    const file = await devBackupFile();
+    const file = await devHistoryFile();
     await mkdir(dirname(file), { recursive: true });
-    await writeFile(file, JSON.stringify(list, null, 2));
+    await writeFile(file, JSON.stringify(trimmed, null, 2));
   }
 }
 
 /** The list as it was before the last save, or null if there has been no save yet. */
 export async function getPreviousDomains(): Promise<Domain[] | null> {
-  try {
-    let raw: unknown = null;
-    if (hasDb()) raw = await loadDomainsBackup(await requireDb());
-    else if (process.env.NODE_ENV !== "production") {
-      const { readFile } = await import("node:fs/promises");
-      raw = JSON.parse(await readFile(await devBackupFile(), "utf8"));
-    }
-    const parsed = DomainList.safeParse(raw);
-    return parsed.success ? parsed.data : null;
-  } catch {
-    return null;
-  }
+  const h = await getDomainHistory();
+  return h.length ? h[h.length - 1] : null;
 }
 
 /**
- * Saves a new domain list. Settings has no passcode (the owner's choice), so every save first keeps
- * the current list as a backup: any change, by anyone, can be undone in one click.
+ * Saves a new domain list. Settings has no passcode (the owner's choice), so every save first records
+ * the current list: the last 10 versions can be walked back one step at a time.
  */
 export async function saveDomains(list: Domain[]): Promise<DomainSource> {
   const valid = DomainList.parse(list);
   const current = (await getDomains()).domains;
-  await writeBackup(current);
+  const history = await getDomainHistory();
+  await writeHistory([...history, current]);
   return writeList(valid);
 }
 
-/** Swaps the current list with the backup. Pressing undo twice re-applies the change. */
-export async function undoDomains(): Promise<Domain[]> {
-  const previous = await getPreviousDomains();
+/** Restores the version before the last save and removes it from the history (press again to go further back). */
+export async function undoDomains(): Promise<{ domains: Domain[]; remaining: number }> {
+  const history = await getDomainHistory();
+  const previous = history.pop();
   if (!previous) throw new Error("There is no earlier version to restore.");
-  const current = (await getDomains()).domains;
   await writeList(previous);
-  await writeBackup(current);
-  return previous;
+  await writeHistory(history);
+  return { domains: previous, remaining: history.length };
 }

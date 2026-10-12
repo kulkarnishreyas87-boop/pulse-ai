@@ -125,6 +125,42 @@ Neon and the email went out.
 | Wall clock | 30 min across the scheduled steps |
 | Email | sent at 00:54 UTC (6:24 am IST), Resend status **delivered** |
 
+## Recall fix: category-wide fetch + Gemini embeddings, new vs old on the same week (12 Oct 2026)
+
+The full week 41 re-run with the new pipeline (category-wide fetch, embeddings, hybrid shortlist, conditional
+benchmark credit, wording-based hype check) in the isolated `dev` schema, compared with the production run of the
+same week (old pipeline) by `npm run proxy-eval -- --week 2026-W41 --compare public`.
+
+**Ground truth (a proxy, not human labels):** papers submitted that week with 10+ Hugging Face upvotes that are in the
+top 10% by meaning for the domain. Neither signal decides whether a paper passes the bar, so it is an independent check.
+
+| Domain | Flagged papers | Shortlisted: old → new | Passed the bar: old → new | Shown: old → new |
+|---|---|---|---|---|
+| AI agents | 11 | 0 → **4** | 0 → **2** | 0 → **1** |
+| Retrieval-augmented generation | 7 | 2 → **3** | 1 → 1 | 1 → 0 |
+| LLMs for code | 7 | 2 → **4** | 0 → 0 | 0 → 0 |
+| CV for industrial applications | 9 | 0 → **3** | 0 → 0 | 0 → 0 |
+| **All** | **34** | **4 → 14 (12% → 41%)** | 1 → 3 | 1 → 1 |
+
+| Run measure | Result |
+|---|---|
+| Candidate pool per domain | 1,235 to 2,352 papers (keyword fetch + category-wide fetch, 10 days) |
+| Jobs | **115 of 115 done, 0 failed** (now includes 40 embedding jobs) |
+| Brief | 3 top papers + 2 per domain (old: 2, 2, 2, 1) |
+| arXiv | rate limited (HTTP 429) for ~15 minutes, caused by overlapping local steps on an IP already used heavily that day; every fetch recovered through job retries |
+
+**Reading it honestly.**
+- Recall into the shortlist roughly tripled; that was the gap the review named (papers using other vocabulary never
+  reached the model).
+- What is *shown* did not change overall: the quality bar, not recall, now decides. Several flagged papers are
+  popular but off-domain for a consultant (e.g. a tokenizer-distillation paper with 211 upvotes counted as "code" by
+  meaning alone), so the proxy over-counts and a lower "shown" rate is partly correct behaviour.
+- Calibrating the bar still needs human labels (below).
+
+**Changes made because of this run.** After a 429, arXiv requests now wait for `Retry-After` (at least 10 s, doubling),
+holding back every later request; the category-wide fetch is one page per day; source fetches get 10 attempts
+instead of 6, with the wait between attempts capped at 10 minutes so they all fit before the cutoff.
+
 ## Not yet measured
 
 - **Recall and precision against human judgement.** `eval/golden.json` lists 100 real papers; set each label to
@@ -135,5 +171,6 @@ Neon and the email went out.
 
 ## Test suite
 
-132 automated tests, no API keys or network needed: ranking, budget, composition, queue, retries, coverage across
-consecutive weeks, takeaways, email, security, and the storage layer on a real in-process Postgres.
+152 automated tests, no API keys or network needed: ranking, budget, composition, queue, retries, coverage across
+consecutive weeks, takeaways, email, security, rate limits, semantic recall, and the storage layer on a real
+in-process Postgres. They run on every Vercel build, so a failing test blocks the deploy.

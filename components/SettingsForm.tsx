@@ -113,7 +113,7 @@ export function SettingsForm() {
     setSaving(false);
   }
 
-  /** Puts back the list as it was before the last save (pressing it again re-applies that save). */
+  /** Puts back the list as it was before the last save. Pressing again steps further back. */
   async function undo() {
     setUndoing(true);
     setStatus(null);
@@ -122,7 +122,8 @@ export function SettingsForm() {
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? "Could not undo");
       setRows(toRows(j.domains));
-      setStatus({ kind: "ok", text: "Restored the domains as they were before the last change." });
+      setMeta((m) => (m ? { ...m, hasPrevious: j.remaining > 0 } : m));
+      setStatus({ kind: "ok", text: `Restored the domains as they were before the last change.${j.remaining ? ` ${j.remaining} earlier version${j.remaining === 1 ? "" : "s"} still available.` : ""}` });
     } catch (e) {
       setStatus({ kind: "err", text: e instanceof Error ? e.message : "Could not undo" });
     }

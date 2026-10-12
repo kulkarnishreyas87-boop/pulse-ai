@@ -12,6 +12,8 @@ export interface Kv {
   set(key: string, value: unknown, ttlSec?: number): Promise<void>;
   setNx(key: string, value: unknown, ttlSec: number): Promise<boolean>;
   del(key: string): Promise<void>;
+  /** Atomically adds one and returns the new count; an expired counter starts again at 1. */
+  incr(key: string, ttlSec: number): Promise<number>;
 }
 
 export class MemoryKv implements Kv {
@@ -43,6 +45,12 @@ export class MemoryKv implements Kv {
   }
   async del(key: string) {
     this.m.delete(key);
+  }
+  async incr(key: string, ttlSec: number) {
+    const e = this.live(key);
+    const n = e ? Number(JSON.parse(e.v)) + 1 : 1;
+    this.m.set(key, { v: JSON.stringify(n), exp: e ? e.exp : this.now() + ttlSec * 1000 });
+    return n;
   }
 }
 
@@ -97,6 +105,14 @@ export class FileKv implements Kv {
   async del(key: string) {
     const { unlink } = await import("node:fs/promises");
     await unlink(await this.path(key)).catch(() => {});
+  }
+  async incr(key: string, ttlSec: number) {
+    const e = await this.read(key);
+    const n = e ? Number(e.v) + 1 : 1;
+    const { mkdir, writeFile } = await import("node:fs/promises");
+    await mkdir(this.dir, { recursive: true });
+    await writeFile(await this.path(key), JSON.stringify({ v: n, exp: e ? e.exp : this.now() + ttlSec * 1000 }));
+    return n;
   }
 }
 

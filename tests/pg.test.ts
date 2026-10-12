@@ -1,7 +1,10 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
-import { SCHEMA, type Db } from "../lib/db/client";
+import { schemaSql, type Db } from "../lib/db/client";
+
+// These tests query bare table names, so they run against the "public" schema of their in-process Postgres.
+process.env.DB_SCHEMA = "public";
 import { PgKv } from "../lib/db/pgkv";
 import { loadBrief, loadDomains, loadLatestBrief, loadWeeks, replaceDomains, saveBrief } from "../lib/db/repo";
 import { Brief, Domain } from "../lib/schema";
@@ -12,7 +15,7 @@ let db: Db;
 before(async () => {
   pg = new PGlite();
   db = { query: async (t, p) => (await pg.query(t, p as any[])).rows as any[] };
-  for (const s of SCHEMA) await db.query(s);
+  for (const s of schemaSql()) await db.query(s);
 });
 
 const fresh = async () => {
@@ -24,7 +27,7 @@ test("schema is idempotent: running it again changes nothing and loses no data",
   await fresh();
   const kv = new PgKv(db);
   await kv.set("keep", { a: 1 });
-  for (const s of SCHEMA) await db.query(s);
+  for (const s of schemaSql()) await db.query(s);
   assert.deepEqual(await kv.get("keep"), { a: 1 });
 });
 

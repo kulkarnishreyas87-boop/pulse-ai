@@ -62,31 +62,32 @@ const ROWS = [
    {id:"k1", c:0, h:`Kavita changes her domain list in Settings as client mandates shift. <b>No code, no deploy, no passcode.</b>`},
    {id:"k2", c:5, h:`Starts on the <b>overview</b> (top 3 and a photo tile per domain), then opens each <b>domain page</b>: the <b>This week</b> line and cards tagged New benchmark / Surprising result / Reframes the problem, with Read / Skim / Client-flag. Under 10 minutes.`}]},
  {id:"sched", cls:"r-sched", name:"Scheduler", sub:"Vercel Cron + GitHub Actions", boxes:[
-   {id:"s1", c:0, h:`<b>Vercel Cron</b>, Monday 00:00 UTC, creates the week's job graph and starts on it. Six more Vercel Cron steps (00:15 to 04:30 UTC) keep working it. A GitHub Actions ticker is an optional backup.`},
+   {id:"s1", c:0, h:`<b>Vercel Cron</b>, Monday 00:00 UTC, creates the week's job graph and starts on it. Twelve more Vercel Cron steps (00:10 to 06:00 UTC) keep working it. A GitHub Actions ticker is an optional backup.`},
    {id:"s2", c:1, h:`Each step claims jobs with a lease and runs them for up to ~4 min, then returns. No job makes more than one Gemini call; a job over 52 s is abandoned and retried.`},
-   {id:"s3", c:5, h:`Cutoff Monday 02:00 UTC (7:30 IST): publishes what is ready, marked <b>partial</b>, then recomposes once if late domains finish. Stuck jobs are re-queued.`}]},
+   {id:"s3", c:5, h:`Cutoff Monday 03:00 UTC (8:30 IST): publishes what is ready, marked <b>partial</b>, then recomposes once if late domains finish. Stuck jobs are re-queued.`}]},
  {id:"settings", cls:"r-settings", name:"Settings", sub:"Next.js + Neon", boxes:[
    {id:"st1", c:1, h:`Domain form: name, arXiv categories, keywords, a <b>"what matters to me"</b> note, max papers.`},
-   {id:"st2", c:3, h:`${CODE} Validates with Zod, caps domains and papers, shows the query-expansion preview. <b>No passcode</b> (owner's choice): saves and AI suggestions are rate limited.`},
-   {id:"st3", c:5, h:`Saved to Neon (domains table). The previous list is kept, so <b>Undo last change</b> restores it in one click. The next run picks it up.`}]},
+   {id:"st2", c:3, h:`${CODE} Validates with Zod, caps domains and papers, shows the query-expansion preview. <b>No passcode</b> (owner's choice): saves, undo and AI suggestions are rate limited per caller <b>in the database</b> (shared by every server instance), plus a daily AI cap.`},
+   {id:"st3", c:5, h:`Saved to Neon (domains table). The <b>last 10 versions</b> are kept, so <b>Undo last change</b> steps back one version per click. The next run picks it up.`}]},
  {id:"expand", cls:"r-gem", name:"Gemini Flash", sub:"Query expander", boxes:[
    {id:"x1", c:2, h:`Domain name + intent note. Runs only when Kavita clicks <b>Suggest</b>.`},
    {id:"x2", c:4, h:`${AI} Turns "AI agents" into categories, 6 to 10 search phrases and negative keywords.`},
    {id:"x3", c:5, h:`Expanded queries returned for Kavita to review and edit.`}]},
  {id:"ingest", cls:"r-sys", name:"System", sub:"Ingest and prefilter", boxes:[
-   {id:"i1", c:1, h:`Run starts. Fetches the week <b>plus a 3-day look back</b>: arXiv only publishes late-week papers on Monday evening, after the run. One job per day (10 per domain).`},
+   {id:"i1", c:1, h:`Run starts. Fetches the week <b>plus a 3-day look back</b>, one job per day: the keyword query <b>and</b> the domain's categories without keywords (capped), so papers using other words are not missed.`},
    {id:"i2", c:2, h:`Reads Neon: the domain snapshot for this run, and which papers <b>last week's run already covered</b>.`},
-   {id:"i3", c:3, h:`${CODE} Joins arXiv + HF by ID, strips versions, skips papers already covered by an earlier brief, then <b>keyword match + capped attention</b> picks <b>~25 per domain</b> (no embeddings).`},
+   {id:"i3", c:3, h:`${CODE} Joins arXiv + HF by ID, skips papers already covered by an earlier brief. A paper qualifies by <b>keyword match or meaning</b> (top 3% by similarity); score = keywords + similarity + capped attention, with reserved slots so neither kind is crowded out. <b>~25 per domain</b>.`},
    {id:"i4", c:5, h:`Shortlist saved. Days arXiv could not serve are skipped and the brief is flagged <b>stale</b>; Hugging Face still contributes.`}]},
  {id:"sources", cls:"r-src", name:"Sources", sub:"Live external data", boxes:[
-   {id:"so1", c:2, h:`<b>arXiv API</b>: papers by category + keyword, one day per request. Spaced 3 s apart, retried on 429/5xx/timeouts, never on 4xx.`},
-   {id:"so2", c:3, h:`<b>Hugging Face Daily Papers</b>: upvotes as an attention signal. Ranking still works if it is down.`}]},
+   {id:"so1", c:2, h:`<b>arXiv API</b>: papers by category + keyword, one day per request. Spaced 3 s apart, retried on 5xx/timeouts; on 429 it waits for Retry-After before any further request; never on 4xx.`},
+   {id:"so2", c:3, h:`<b>Hugging Face Daily Papers</b>: upvotes as an attention signal. Ranking still works if it is down.`},
+   {id:"iE", c:4, h:`${AI} <b>Gemini embeddings</b> (separate small jobs): similarity of each fetched paper to the domain's description. Falls back to keywords only if unavailable.`}]},
  {id:"judge", cls:"r-gem", name:"Gemini Flash", sub:"Judge", boxes:[
    {id:"g1", c:2, h:`<b>Rubric</b> (in code, versioned r2): relevance, evidence, hype, and the three named signals: <b>new benchmark, surprising result, reframing</b>.`},
    {id:"g2", c:4, h:`${AI} Scores 8 abstracts per call as JSON, temperature 0, one-line rationale citing the abstract. Cached per paper, domain focus and rubric version.`},
    {id:"g3", c:5, h:`Zod-validated scores. One repair retry, then the domain <b>degrades</b> to unscored top papers.`}]},
  {id:"rank", cls:"r-sys", name:"System", sub:"Rank", boxes:[
-   {id:"r1", c:3, h:`${CODE} Signal = the strongest of the three (any one is enough). Quality = 0.40 signal + 0.35 evidence + 0.25 relevance − hype. Attention only orders.`},
+   {id:"r1", c:3, h:`${CODE} Signal = the strongest of the three; a new benchmark counts as strong only with solid evidence. Quality = 0.40 signal + 0.35 evidence + 0.25 relevance − hype, where hype is the higher of the model's view and a <b>wording check in code</b>. Attention only orders.`},
    {id:"r2", c:5, h:`Threshold applied. Below it the domain shows <b>quiet week</b>, no padding. Top-k go to the writer.`}]},
  {id:"writer", cls:"r-gem", name:"Gemini Flash", sub:"Writer and verifier", boxes:[
    {id:"w1", c:2, h:`Guardrails: <b>abstract + metadata only</b>. Abstracts are data, never instructions. JSON schema enforced.`},
@@ -118,8 +119,8 @@ const ROWS = [
    {id:"o2", c:5, h:`<b>/status</b>: job progress, AI totals, and problems with credentials redacted.`}]},
  {id:"eval", cls:"r-eval", name:"Evaluation", sub:"Offline, before submission", boxes:[
    {id:"ev1", c:0, h:`Run manually before each release.`},
-   {id:"ev2", c:2, h:`Labelling file: <b>100 real papers</b> from a live week (labels pending, needs a human).`},
-   {id:"ev3", c:3, h:`Recall and precision vs labels; 130+ offline tests incl. chaos and injection; adversarial checks against the real model.`},
+   {id:"ev2", c:2, h:`Labelling file: <b>100 real papers</b> (human labels pending), plus a <b>community proxy</b>: on-topic papers with 10+ Hugging Face upvotes.`},
+   {id:"ev3", c:3, h:`Recall vs the community proxy (new vs old pipeline on the same week); 152 offline tests run on <b>every Vercel deploy</b>; adversarial checks against the real model.`},
    {id:"ev4", c:5, h:`Results in <b>docs/EVALUATION.md</b>; risks in <b>docs/FAILURE_MODES.md</b>.`}]},
 ];
 
@@ -130,7 +131,7 @@ const EDGES = [
  ["x3","st2",{red:true,label:"Kavita approves"}],
  ["st1","st2"],["st2","st3"],
  ["s1","s2"],["s2","i1"],
- ["i1","so1"],["so1","i3"],["so2","i3"],["i2","i3"],["i3","i4"],
+ ["i1","so1"],["so1","i3"],["so2","i3"],["i2","i3"],["iE","i3"],["i3","i4"],
  ["i4","g2"],["g1","g2"],["g2","g3"],
  ["g3","r1"],["r1","r2"],
  ["r2","w2"],["w1","w2"],["w2","w3"],
@@ -139,7 +140,7 @@ const EDGES = [
  ["c3","web0"],["web0","web2"],["web2","web1"],["web1","wd2",{label:"open a domain"}],["wd1","wd2"],["wd2","wd3"],["wd3","k2"],
  ["e2","k2",{red:true,label:"Monday morning"}],
  ["web1","k2"],
- ["s2","s3",{red:true,label:"if not done by the 02:00 UTC cutoff"}],
+ ["s2","s3",{red:true,label:"if not done by the 03:00 UTC cutoff"}],
  ["ev1","ev2"],["ev2","ev3"],["ev3","ev4"],
 ];
 

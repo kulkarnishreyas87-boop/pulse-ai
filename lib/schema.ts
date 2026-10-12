@@ -20,6 +20,7 @@ export const Paper = z.object({
   url: z.string(),
   source: z.enum(["arxiv", "hf"]),
   hf: HfSignal.optional(),
+  sim: z.number().optional(), // cosine similarity to the domain description (Gemini embeddings)
 });
 export type Paper = z.infer<typeof Paper>;
 
