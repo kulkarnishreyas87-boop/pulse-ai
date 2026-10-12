@@ -4,7 +4,7 @@ import { DOMAIN_PHOTOS, creditUrl, domainTheme, hueStyle } from "@/lib/theme";
 import { DomainPhoto, PhotoCredit } from "./DomainPhoto";
 import { PaperCard, VERDICT } from "./Paper";
 import { ReadingProgress, Reveal } from "./Motion";
-import { IconAlert, IconArrow, IconCheck, IconClock, IconLayers, IconPulse, IconSettings, IconSparkle } from "./Icons";
+import { IconAlert, IconArrow, IconCheck, IconClock, IconLayers, IconPulse, IconSearch, IconSettings, IconSparkle } from "./Icons";
 
 /* ---------- shared helpers ---------- */
 
@@ -37,9 +37,14 @@ function Topbar({ home }: { home: string }) {
         </span>
         Research Pulse
       </Link>
-      <Link href="/settings" className="ghost-btn">
-        <IconSettings /> Edit domains
-      </Link>
+      <div className="topbar-actions">
+        <Link href="/search" className="ghost-btn">
+          <IconSearch /> Search
+        </Link>
+        <Link href="/settings" className="ghost-btn">
+          <IconSettings /> Edit domains
+        </Link>
+      </div>
     </div>
   );
 }

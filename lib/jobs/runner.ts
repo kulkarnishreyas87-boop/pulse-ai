@@ -11,14 +11,14 @@ export interface TickResult {
   created: boolean;
   ran: { id: string; ok: boolean; ms: number; note?: string; error?: string }[];
   counts: ReturnType<typeof summarise> | null;
-  /** True once nothing is left to run; the caller (GitHub Actions) stops ticking. */
+  /** True once nothing is left to run; later cron steps then return immediately. */
   finished: boolean;
   status: "no-run" | "running" | "finished";
 }
 
 export interface TickOptions {
   week?: string; // default: the last completed week
-  autoCreate?: boolean; // create the run if it does not exist (the cron and the ticker both do, so one missing cron cannot lose a week)
+  autoCreate?: boolean; // create the run if it does not exist (every cron step does, so one missing cron cannot lose a week)
   getDomains?: () => Promise<Domain[]>;
   /**
    * How long we may keep starting new jobs. A step must finish inside the platform limit (60s declared on

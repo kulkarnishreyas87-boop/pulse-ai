@@ -4,8 +4,8 @@ All numbers below were measured on real data for week **2026-W40** (28 Sep to 4 
 
 ## One real end-to-end run
 
-The full weekly job graph ran through the real `/api/step` endpoint, driven the way the GitHub Actions
-ticker drives it, against live arXiv, Hugging Face Daily Papers and Gemini.
+The full weekly job graph ran through the real `/api/step` endpoint, driven the way the
+cron steps drive it, against live arXiv, Hugging Face Daily Papers and Gemini.
 
 | Measure | Result |
 |---|---|
@@ -90,7 +90,7 @@ and the web app reads them from Neon (verified with the local fallback file move
 
 ## Full live week with every fix, on Neon
 
-Driven through the real `/api/step` endpoint with the cron secret (as the GitHub ticker does), every job and the
+Driven through the real `/api/step` endpoint with the cron secret (as Vercel Cron does), every job and the
 brief stored in the hosted Neon database, email in dry-run mode.
 
 | Measure | Result |
@@ -161,6 +161,15 @@ top 10% by meaning for the domain. Neither signal decides whether a paper passes
 holding back every later request; the category-wide fetch is one page per day; source fetches get 10 attempts
 instead of 6, with the wait between attempts capped at 10 minutes so they all fit before the cutoff.
 
+## Accessibility and search (12 Oct 2026)
+
+- **Accessibility:** axe-core 4.10 (WCAG 2 A and AA rules) on the overview, a domain page, search, settings and
+  status, in light and dark mode. Found: faint text at 2.9:1, some domain-coloured labels at 4.3:1, the green
+  "Read in full" label at 4.1:1, search highlights in dark mode. All fixed; **0 violations** on every page in both modes.
+  Domain text colour now passes 4.5:1 for every possible hue, so domains added later pass too.
+- **Search** (`/search`, button in the top bar): every published brief from the last 26 weeks, by topic, paper,
+  author or domain; 7 tests. Checked by hand in the browser on desktop and phone width.
+
 ## Not yet measured
 
 - **Recall and precision against human judgement.** `eval/golden.json` lists 100 real papers; set each label to
@@ -171,6 +180,6 @@ instead of 6, with the wait between attempts capped at 10 minutes so they all fi
 
 ## Test suite
 
-152 automated tests, no API keys or network needed: ranking, budget, composition, queue, retries, coverage across
-consecutive weeks, takeaways, email, security, rate limits, semantic recall, and the storage layer on a real
+159 automated tests, no API keys or network needed: ranking, budget, composition, queue, retries, coverage across
+consecutive weeks, takeaways, email, security, rate limits, semantic recall, search, and the storage layer on a real
 in-process Postgres. They run on every Vercel build, so a failing test blocks the deploy.

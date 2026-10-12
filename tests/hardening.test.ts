@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import { createJsonLlm, takeLlmStats, type RawCall } from "../lib/ai/gemini";
@@ -302,8 +302,9 @@ test("no credential is hardcoded anywhere in the repository", () => {
 });
 
 test("secrets and caches are gitignored, and .env.example holds no values for secrets", () => {
-  const ignore = readFileSync(join(process.cwd(), ".gitignore"), "utf8");
-  for (const must of [".env.local", ".env", "node_modules", ".cache", ".next", ".vercel"]) assert.ok(ignore.split(/\r?\n/).includes(must), `${must} must be ignored`);
+  // A Vercel CLI upload has no .gitignore (Vercel drops it), so that half only applies in a git checkout.
+  const ignore = existsSync(join(process.cwd(), ".gitignore")) ? readFileSync(join(process.cwd(), ".gitignore"), "utf8") : null;
+  if (ignore !== null) for (const must of [".env.local", ".env", "node_modules", ".cache", ".next", ".vercel"]) assert.ok(ignore.split(/\r?\n/).includes(must), `${must} must be ignored`);
   const example = readFileSync(join(process.cwd(), ".env.example"), "utf8");
   for (const line of example.split(/\r?\n/)) {
     const m = /^(GEMINI_API_KEY|DATABASE_URL|RESEND_API_KEY|CRON_SECRET|EMAIL_TO)=(.*)$/.exec(line);

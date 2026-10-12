@@ -12,7 +12,7 @@ const STEP_BUDGET_MS = maxDuration * 1000 - 60_000;
 
 /**
  * One serverless step: create the week's run if it does not exist yet, then claim and run jobs until the
- * time budget is spent. Called by Vercel Cron and, repeatedly, by the GitHub Actions ticker.
+ * time budget is spent. Called by the Vercel Cron steps.
  */
 async function handle(req: Request) {
   const auth = cronFromEnv(req.headers);

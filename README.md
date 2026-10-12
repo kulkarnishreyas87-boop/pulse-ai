@@ -24,9 +24,10 @@ npm run dev
   - `npm run eval -- --init` then label papers in `eval/golden.json`, then `npm run eval` for recall/precision
 - [x] Step 4: compose and word budget (`npm run compose -- --week 2026-W40`; page now shows the real brief, archive at `/brief/<week>`)
 - [x] Step 5: domain settings and query expansion (`/settings`, edits domains with no code change; AI suggests search terms)
-- [x] Step 6: job queue, cron, GitHub Actions ticker (`/api/run`, `/api/step`, `/status`, `.github/workflows/tick.yml`)
+- [x] Step 6: job queue and Vercel Cron (`/api/run`, `/api/step`, `/status`)
 - [x] Step 7: email via Resend (`npm run email:preview` renders it without sending; `-- --send` sends one test)
 - [x] Step 8: hardening, failure-mode tests (`docs/FAILURE_MODES.md`, `docs/EVALUATION.md`, `docs/DEPLOY.md`)
+- [x] Search: a Search button in the top bar opens `/search`, which finds a topic, paper, author or domain across the last 26 weekly briefs (no AI call)
 
 ## Deploy
 
@@ -35,10 +36,10 @@ Import the repo into Vercel, then add the env vars from `.env.example`.
 ## How a week runs (step 6)
 
 Monday 00:00 UTC, Vercel Cron calls `/api/run`, which creates the week's job graph (idempotent) and starts working
-through it. Six more Vercel Cron entries (00:15 to 04:30 UTC) call `/api/step`. Each step runs jobs for up to about
+through it. Twelve more Vercel Cron entries (00:10 to 06:00 UTC) call `/api/step`. Each step runs jobs for up to about
 4 minutes and returns, inside Vercel's 5-minute function limit. No job makes more than one Gemini call. A full week
-needs about 6 minutes of work, so the first two steps normally finish it. A GitHub Actions ticker
-(`.github/workflows/tick.yml`, not in the repository by default) can be added as an extra driver.
+needs about 20 minutes of work (115 jobs), so the first five or six steps normally finish it and the rest are slack
+for retries. Vercel Cron is the only scheduler in use.
 
 ```
 hf ─┐
@@ -57,8 +58,7 @@ abstract excerpts, and at the cutoff (Monday 02:00 UTC) the brief publishes with
 and is recomposed once if late domains finish. If no domain produced any content, nothing is published and the
 previous brief stays in place.
 
-Vercel sends `CRON_SECRET` to the cron routes automatically. The optional GitHub ticker would need `APP_URL` and
-`CRON_SECRET` as repository secrets.
+Vercel sends `CRON_SECRET` to the cron routes automatically.
 
 ## Email (step 7)
 

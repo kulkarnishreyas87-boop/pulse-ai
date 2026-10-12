@@ -10,7 +10,7 @@ const digest = (s: string) => createHash("sha256").update(s).digest();
 
 /**
  * Gate for the scheduler endpoints. Vercel Cron sends `Authorization: Bearer $CRON_SECRET` automatically
- * when CRON_SECRET is set, and the GitHub Actions ticker sends the same header. Fails closed in production.
+ * when CRON_SECRET is set. Fails closed in production.
  */
 export function checkCron(headers: Headers, env: { secret?: string; production: boolean }): AuthResult {
   if (!env.secret) {

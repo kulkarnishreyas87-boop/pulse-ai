@@ -59,6 +59,8 @@ Where can this system go wrong, what stops it, and what is the evidence? Evidenc
 | 18 | **Brief too long to read** | Hard 1,800-word budget enforced in code (takeaways included), trimming least valuable material first | Test; live brief was 1,774 words |
 | 30 | **Development touching production data** | Local runs, scripts and tests default to an isolated `dev` schema; only production (or an explicit `DB_SCHEMA=public`) uses the live tables | Test: data written under dev is invisible under public in the same database |
 | 31 | **A broken change reaching production** | The full test suite runs in every Vercel build (`vercel-build`): a failing test stops the deploy | Configured in `package.json` |
+| 32 | **Search misused or misleading** (huge queries, odd characters, noisy results) | Query capped at 100 characters and 8 words; matching is plain code over published briefs (no AI call, no database query built from the text); every word must match, so results are not padded with weak hits; highlighting escapes the words before use | Test (`tests/search.test.ts`) |
+| 33 | **Text hard to read for some readers** | Automated WCAG 2 A/AA check (axe-core) on every page in light and dark mode; colours fixed until zero violations, including domain colours generated for any future domain | Recorded in `docs/EVALUATION.md` |
 | 28 | **Documentation claims more than the code does** | A test fails if the Components Map claims embeddings, the old formula, the old budget, or omits the look back and takeaway | Test. On review the map had claimed embeddings and cross-week de-duplication that did not exist; both corrected (the second is now real) |
 | 19 | **Empty app when first opened** | Committed sample brief, clearly labelled; falls back to it if the database is empty or down | Test |
 
@@ -67,6 +69,6 @@ Where can this system go wrong, what stops it, and what is the evidence? Evidenc
 1. **Recall and precision are unmeasured.** The labelling file exists (`eval/golden.json`, 100 papers) but only a human can label it.
 2. **Rubric calibration.** Novelty and hype barely vary across real papers; the pass threshold is provisional.
 3. **Recall is measured only against a community proxy** (Hugging Face upvotes), not human labels.
-4. **Not yet run against real Neon, Vercel, GitHub Actions or a real email send.** The SQL and the full weekly pipeline are tested on a real Postgres engine in-process, but connectivity to the hosted services is unverified.
-5. **Cost per week not measured over a full run.** Per-job token counts are now recorded and shown on `/status`, but the first full run predates that.
-6. **Vercel Hobby cron runs "within the hour", not at an exact minute.** The ticker and the 02:00 UTC cutoff absorb this.
+4. **The heavier pipeline (category-wide fetch + embeddings) has not yet had a scheduled Monday run on Vercel.** It ran in full against live services from a local server (see `docs/EVALUATION.md`); the first Monday run in production is the remaining proof. The old pipeline's Monday run on Neon, Vercel and real email is verified.
+5. **Cost per week** is measured in tokens, not money: the full new-pipeline week used 28 Gemini Flash calls and 82,400 tokens, plus small embedding calls (shown on `/status`).
+6. **Vercel Hobby cron runs "within the hour", not at an exact minute.** Twelve steps spread over six hours and the 03:00 UTC cutoff absorb this.
