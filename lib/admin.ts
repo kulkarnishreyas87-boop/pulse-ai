@@ -15,21 +15,46 @@ const digest = (s: string) => createHash("sha256").update(s).digest();
  *  - Not set, development: open, for convenience.
  *  - Not set, production: refused, so a missing variable can never leave the door open.
  */
+/**
+ * Undo the usual copy-paste slips around a passcode: surrounding spaces or line breaks, wrapping quotes,
+ * and the variable name copied along with the value ("ADMIN_PASSCODE=..."). The secret itself must
+ * still match exactly; this only stops a correct passcode being rejected for formatting.
+ */
+export function normalizePasscode(s: string | undefined | null): string {
+  return (s ?? "")
+    .trim()
+    .replace(/^ADMIN_PASSCODE\s*=\s*/i, "")
+    .replace(/^(["'])(.*)\1$/, "$2")
+    .trim();
+}
+
 export function checkAdmin(headers: Headers, env: { passcode?: string; production: boolean }): AuthResult {
-  if (!env.passcode) {
+  const expected = normalizePasscode(env.passcode);
+  if (!expected) {
     return env.production
       ? { ok: false, status: 503, error: "Editing is disabled: ADMIN_PASSCODE is not configured on the server." }
       : { ok: true, status: 200 };
   }
-  const given = headers.get("x-admin-key") ?? "";
+  const given = normalizePasscode(headers.get("x-admin-key"));
+  if (!given) return { ok: false, status: 401, error: "Enter the admin passcode first. It is the ADMIN_PASSCODE value set in Vercel." };
   // hash first so the comparison is constant-time and length-independent
-  return timingSafeEqual(digest(given), digest(env.passcode))
+  return timingSafeEqual(digest(given), digest(expected))
     ? { ok: true, status: 200 }
-    : { ok: false, status: 401, error: "Wrong passcode." };
+    : {
+        ok: false,
+        status: 401,
+        error: "That passcode doesn't match. Copy the value after ADMIN_PASSCODE= from your .env.local file (or from Vercel: Settings, Environment Variables).",
+      };
 }
 
-export const adminFromEnv = (headers: Headers) =>
-  checkAdmin(headers, { passcode: process.env.ADMIN_PASSCODE, production: process.env.NODE_ENV === "production" });
+/** Wrong guesses are rate-limited, so the passcode cannot be brute-forced. */
+export function adminFromEnv(headers: Headers): AuthResult {
+  const r = checkAdmin(headers, { passcode: process.env.ADMIN_PASSCODE, production: process.env.NODE_ENV === "production" });
+  if (!r.ok && r.status === 401 && rateLimited("admin-failures", 10, 60_000)) {
+    return { ok: false, status: 429, error: "Too many wrong passcodes. Wait a minute and try again." };
+  }
+  return r;
+}
 
 /**
  * Gate for the scheduler endpoints. Vercel Cron sends `Authorization: Bearer $CRON_SECRET` automatically

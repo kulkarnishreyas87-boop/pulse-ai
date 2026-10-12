@@ -468,3 +468,14 @@ main.wrap { padding-top: 36px; padding-bottom: 80px; }
 .pager-thumb { flex: none; width: 76px; height: 56px; border-radius: 12px; overflow: hidden; }
 .pager-thumb .domain-photo, .pager-thumb .domain-art { width: 100%; height: 100%; }
 .tiles-credit { margin-top: 14px; }
+
+/* Settings: unlock panel */
+.unlock { border-color: var(--line); }
+.unlock.is-unlocked { border-color: color-mix(in srgb, var(--read) 45%, transparent); }
+.pass-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pass-row input { flex: 1; min-width: 220px; font-family: ui-monospace, "SF Mono", Consolas, monospace; letter-spacing: 0.02em; }
+.hint { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+.hint code { font-size: 12px; padding: 1px 6px; border-radius: 6px; background: var(--surface-2); border: 1px solid var(--line); }
+.pass-msg { margin: 10px 0 0; font-size: 14px; font-weight: 600; }
+.pass-msg.ok { color: var(--read); }
+.pass-msg.err { color: var(--flag); }

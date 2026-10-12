@@ -35,11 +35,17 @@ export function SettingsForm() {
   const [rows, setRows] = useState<Row[]>([]);
   const [meta, setMeta] = useState<{ source: string; max: number; writable: boolean; needsPasscode: boolean } | null>(null);
   const [pass, setPass] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [passMsg, setPassMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [status, setStatus] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setPass(key());
+    const remembered = key();
+    setPass(remembered);
+    if (remembered) void unlock(remembered, true);
     fetch("/api/domains")
       .then((r) => r.json())
       .then((j) => {
@@ -61,7 +67,34 @@ export function SettingsForm() {
   }, []);
 
   const patch = (i: number, p: Partial<Row>) => setRows((rs) => rs.map((r, j) => (j === i ? { ...r, ...p } : r)));
-  const headers = () => ({ "Content-Type": "application/json", "x-admin-key": pass });
+  const headers = () => ({ "Content-Type": "application/json", "x-admin-key": pass.trim() });
+
+  /** Checks the passcode with the server before any edits, so a typo shows up straight away. */
+  async function unlock(value = pass, quiet = false) {
+    if (!value.trim()) return;
+    setChecking(true);
+    if (!quiet) setPassMsg(null);
+    try {
+      const res = await fetch("/api/admin/check", { method: "POST", headers: { "x-admin-key": value.trim() } });
+      const j = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setUnlocked(true);
+        setPassMsg({ kind: "ok", text: "Unlocked. You can edit and save your domains." });
+        try {
+          sessionStorage.setItem("rp-admin", value.trim());
+        } catch {}
+      } else {
+        setUnlocked(false);
+        try {
+          sessionStorage.removeItem("rp-admin");
+        } catch {}
+        if (!quiet) setPassMsg({ kind: "err", text: j.error ?? "That passcode was not accepted." });
+      }
+    } catch {
+      setPassMsg({ kind: "err", text: "Could not reach the server to check the passcode." });
+    }
+    setChecking(false);
+  }
 
   async function suggest(i: number) {
     const r = rows[i];
@@ -128,10 +161,34 @@ export function SettingsForm() {
       {meta.source === "default" && <div className="banner sample">Showing the built-in starter domains. Saving creates your own list.</div>}
 
       {meta.needsPasscode && (
-        <label className="field">
-          Admin passcode
-          <input type="password" value={pass} onChange={(e) => setPass(e.target.value)} autoComplete="off" />
-        </label>
+        <div className={`card unlock ${unlocked ? "is-unlocked" : ""}`}>
+          <label className="field" htmlFor="admin-pass">
+            Admin passcode
+          </label>
+          <div className="pass-row">
+            <input
+              id="admin-pass"
+              type={showPass ? "text" : "password"}
+              value={pass}
+              onChange={(e) => {
+                setPass(e.target.value);
+                setUnlocked(false);
+              }}
+              onKeyDown={(e) => e.key === "Enter" && unlock()}
+              placeholder="Paste the ADMIN_PASSCODE value"
+              autoComplete="off"
+              spellCheck={false}
+            />
+            <button type="button" className="btn" onClick={() => setShowPass((s) => !s)} aria-pressed={showPass}>
+              {showPass ? "Hide" : "Show"}
+            </button>
+            <button type="button" className="btn primary" onClick={() => unlock()} disabled={checking || !pass.trim() || unlocked}>
+              {checking ? "Checking…" : unlocked ? "Unlocked ✓" : "Unlock"}
+            </button>
+          </div>
+          <p className="hint">It is the value after <code>ADMIN_PASSCODE=</code> in your <code>.env.local</code> file, the same one saved in Vercel.</p>
+          {passMsg && <p className={`pass-msg ${passMsg.kind}`}>{passMsg.text}</p>}
+        </div>
       )}
 
       {rows.map((r, i) => (
@@ -149,7 +206,7 @@ export function SettingsForm() {
             What matters to you in this domain (optional)
             <input value={r.intentNote} onChange={(e) => patch(i, { intentNote: e.target.value })} maxLength={400} placeholder="e.g. Reliability and real deployment, not toy demos" />
           </label>
-          <button type="button" className="btn" disabled={r.busy || r.name.trim().length < 2} onClick={() => suggest(i)}>
+          <button type="button" className="btn" disabled={r.busy || r.name.trim().length < 2 || (meta.needsPasscode && !unlocked)} onClick={() => suggest(i)}>
             {r.busy ? "Thinking…" : "Suggest search terms with AI"}
           </button>
           {r.msg && <p className="meta">{r.msg}</p>}
@@ -181,7 +238,7 @@ export function SettingsForm() {
         <button type="button" className="btn" onClick={add} disabled={rows.length >= meta.max}>
           Add a domain {rows.length >= meta.max ? `(max ${meta.max})` : ""}
         </button>
-        <button type="button" className="btn primary" onClick={save} disabled={saving || !meta.writable}>
+        <button type="button" className="btn primary" onClick={save} disabled={saving || !meta.writable || (meta.needsPasscode && !unlocked)} title={meta.needsPasscode && !unlocked ? "Unlock with the admin passcode first" : undefined}>
           {saving ? "Saving…" : "Save changes"}
         </button>
       </div>
