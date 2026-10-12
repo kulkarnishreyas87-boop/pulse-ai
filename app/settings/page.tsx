@@ -1,7 +1,7 @@
 import { SettingsForm } from "@/components/SettingsForm";
 import { PageHero } from "@/components/PageHero";
 
-export const metadata = { title: "Domains · Research Pulse" };
+export const metadata = { title: "Domains · Pulse-AI" };
 
 export default function SettingsPage() {
   return (

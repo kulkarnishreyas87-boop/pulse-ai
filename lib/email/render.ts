@@ -27,7 +27,7 @@ function headline(c: BriefCard): string {
 export function subjectFor(brief: Brief): string {
   const wk = Number(brief.week.split("-W")[1]);
   const top = brief.topThree[0]?.title;
-  const base = `Research Pulse · Week ${wk}${top ? `: ${clip(oneLine(top), 70)}` : ""}`;
+  const base = `Pulse-AI · Week ${wk}${top ? `: ${clip(oneLine(top), 70)}` : ""}`;
   return brief.isPartial ? `[Partial] ${base}` : base;
 }
 
@@ -78,7 +78,7 @@ export function renderEmail(brief: Brief, appUrl: string, opts: { updated?: bool
 <html><body style="margin:0;background:#f6f7f9;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#1b2130">
 <div style="max-width:620px;margin:0 auto;padding:24px 16px">
 <div style="background:#ffffff;border:1px solid #dde1ea;border-radius:10px;padding:24px">
-<h1 style="font-size:22px;margin:0">Research Pulse</h1>
+<h1 style="font-size:22px;margin:0">Pulse-AI</h1>
 <div style="font-size:13px;color:#5d667a;margin:4px 0 16px">Week of ${esc(range)}${minutes ? ` · full brief is about ${minutes} min` : ""}</div>
 ${notes.map((n) => `<div style="font-size:13px;border:1px solid #d49a12;border-radius:6px;padding:8px 10px;margin:0 0 10px">${esc(n)}</div>`).join("\n")}
 ${brief.topThree.length ? `<h2 style="font-size:15px;margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid #dde1ea">This week at a glance</h2>\n${brief.topThree.map((c) => cardHtml(c, true)).join("\n")}` : ""}
@@ -92,7 +92,7 @@ ${sections}
     return `[${LABEL[c.verdict]}] ${oneLine(c.title)}${c.signals.length ? ` (${c.signals.join(", ")})` : ""}\n  ${oneLine(headline(c))}${link ? `\n  ${link}` : ""}`;
   };
   const text = [
-    `Research Pulse: week of ${range}${minutes ? ` (full brief is about ${minutes} min)` : ""}`,
+    `Pulse-AI: week of ${range}${minutes ? ` (full brief is about ${minutes} min)` : ""}`,
     ...notes.map((n) => `NOTE: ${n}`),
     brief.topThree.length ? `\nTHIS WEEK AT A GLANCE\n${brief.topThree.map((c) => `${textCard(c)}${c.clientAngle ? `\n  Client angle: ${oneLine(c.clientAngle)}` : ""}`).join("\n\n")}` : "",
     ...brief.sections.map((s) => `\n${s.domainName.toUpperCase()}\n${s.takeaway ? `This week: ${oneLine(s.takeaway)}\n\n` : ""}${s.status === "quiet" ? "Nothing significant this week." : s.cards.length ? s.cards.map(textCard).join("\n\n") : s.featured.length ? "See the top story above." : (s.note ?? "Nothing further this week.")}`),

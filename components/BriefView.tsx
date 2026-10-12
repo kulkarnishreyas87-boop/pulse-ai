@@ -35,7 +35,7 @@ function Topbar({ home }: { home: string }) {
         <span className="brand-mark" aria-hidden="true">
           <IconPulse />
         </span>
-        Research Pulse
+        Pulse-AI
       </Link>
       <div className="topbar-actions">
         <Link href="/search" className="ghost-btn">

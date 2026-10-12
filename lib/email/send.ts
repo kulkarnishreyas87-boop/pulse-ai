@@ -29,7 +29,7 @@ export function emailConfig(env: Record<string, string | undefined> = process.en
   if (!/^https?:\/\//.test(appUrl)) return { ready: false, reason: "APP_URL is not set (needed for the link to the full brief)" };
 
   // Resend's shared test sender works with no domain, but only delivers to the account owner's own address.
-  return { ready: true, apiKey, to, appUrl, from: env.EMAIL_FROM?.trim() || "Research Pulse <onboarding@resend.dev>" };
+  return { ready: true, apiKey, to, appUrl, from: env.EMAIL_FROM?.trim() || "Pulse-AI <onboarding@resend.dev>" };
 }
 
 /**

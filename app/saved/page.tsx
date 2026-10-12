@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/PageHero";
 import { SavedList } from "@/components/SavedList";
 
-export const metadata: Metadata = { title: "Saved · Research Pulse" };
+export const metadata: Metadata = { title: "Saved · Pulse-AI" };
 
 export default function SavedPage() {
   return (

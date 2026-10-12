@@ -37,7 +37,7 @@ Import the repository. Add these **Environment Variables** (Production):
 | `CRON_SECRET` | any long random string you invent |
 | `RESEND_API_KEY` | your Resend key |
 | `EMAIL_TO` | recipient address (with no verified domain, Resend only delivers to your own Resend account email) |
-| `APP_URL` | the deployed URL, e.g. `https://research-pulse.vercel.app` |
+| `APP_URL` | the deployed URL, e.g. `https://pulse-ai.vercel.app` |
 
 `vercel.json` already schedules the Monday 00:00 UTC cron.
 

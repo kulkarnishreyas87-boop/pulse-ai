@@ -19,7 +19,7 @@ export async function GET() {
   }
   const email = emailConfig();
   return NextResponse.json({
-    app: "research-pulse",
+    app: "pulse-ai",
     database,
     gemini: process.env.GEMINI_API_KEY ? "configured" : "missing",
     model: geminiModel,

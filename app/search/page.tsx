@@ -9,7 +9,7 @@ import { domainTheme, hueStyle } from "@/lib/theme";
 import type { Brief } from "@/lib/schema";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Search · Research Pulse" };
+export const metadata: Metadata = { title: "Search · Pulse-AI" };
 
 const WEEKS_SEARCHED = 26; // about six months of briefs
 

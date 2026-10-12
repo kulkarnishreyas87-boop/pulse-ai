@@ -3,7 +3,7 @@ import { runStatus } from "@/lib/jobs/status";
 import { PageHero } from "@/components/PageHero";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Status · Research Pulse" };
+export const metadata = { title: "Status · Pulse-AI" };
 
 export default async function StatusPage() {
   let s: Awaited<ReturnType<typeof runStatus>> | null = null;

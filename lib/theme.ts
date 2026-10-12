@@ -79,7 +79,7 @@ export const DOMAIN_PHOTOS: Record<string, DomainPhoto> = {
 export const photoUrl = (p: DomainPhoto, width: number) => `${p.src}?auto=format&fit=crop&w=${width}&q=70`;
 
 /** Unsplash asks for referral links on credits. */
-export const creditUrl = (url: string) => `${url}?utm_source=research_pulse&utm_medium=referral`;
+export const creditUrl = (url: string) => `${url}?utm_source=pulse_ai&utm_medium=referral`;
 
 /** CSS custom property carrying the hue, consumed by the stylesheet as hsl(var(--h) …). */
 export const hueStyle = (hue: number) => ({ ["--h" as string]: String(hue) }) as React.CSSProperties;

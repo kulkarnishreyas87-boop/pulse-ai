@@ -31,7 +31,7 @@ const cfgEnv = { RESEND_API_KEY: "re_test", EMAIL_TO: "kavita@example.com", APP_
 
 test("renders the top story, domains, a quiet-week line and the link to the full brief", () => {
   const m = renderEmail(brief(), "https://pulse.example.com/");
-  assert.match(m.subject, /^Research Pulse · Week 40: Paper 10001$/);
+  assert.match(m.subject, /^Pulse-AI · Week 40: Paper 10001$/);
   assert.match(m.html, /This week at a glance/);
   assert.match(m.html, /Nothing significant this week/);
   assert.match(m.html, /https:\/\/pulse\.example\.com\/brief\/2026-W40/, "no double slash, correct week");
@@ -191,7 +191,7 @@ test("email job: a partial email goes out at the cutoff, and one 'Updated' email
   await HANDLERS.email(job, r, ctx); // a third run changes nothing
   assert.equal(sent.length, 2);
   assert.match(sent[0].subject, /^\[Partial\]/);
-  assert.match(sent[1].subject, /^Updated: Research Pulse/);
+  assert.match(sent[1].subject, /^Updated: Pulse-AI/);
   assert.match(sent[1].text, /NOTE: Updated:/);
   assert.deepEqual(sent.map((m) => m.idempotencyKey), ["2026-W40:partial", "2026-W40:full"]);
 });
@@ -209,7 +209,7 @@ test("EMAIL_DRY_RUN: the full email step runs but nothing leaves the machine; th
     assert.match((await HANDLERS.email(job, r, ctx)) as string, /sent full email/);
     assert.equal(network, 0, "no request to Resend");
     const rec: any = await kv.get("emaildry:2026-W40:full");
-    assert.match(rec.subject, /Research Pulse · Week 40/);
+    assert.match(rec.subject, /Pulse-AI · Week 40/);
     assert.deepEqual(rec.to, ["kavita@example.com"]);
     assert.match(rec.text, /Read the full brief/);
     assert.match((await HANDLERS.email(job, r, ctx)) as string, /already sent/, "guards still apply in a dry run");

@@ -7,7 +7,7 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap
 const serif = Newsreader({ subsets: ["latin"], variable: "--font-serif", display: "swap", style: ["normal", "italic"] });
 
 export const metadata: Metadata = {
-  title: "Research Pulse · Weekly AI research brief",
+  title: "Pulse-AI · Weekly AI research brief",
   description: "The week's significant AI/ML papers by domain: why they matter and what to tell clients, in under ten minutes.",
 };
 

@@ -3,7 +3,7 @@ import type { Domain, Paper } from "../schema";
 import { arxivStamp, type WeekWindow } from "../week";
 
 const ENDPOINT = "https://export.arxiv.org/api/query";
-const UA = "research-pulse/0.1 (weekly research brief; student project)";
+const UA = "pulse-ai/0.1 (weekly research brief; student project)";
 /** arXiv asks for at most one request every 3 seconds. Mutable only so tests can run without real waiting. */
 export const arxivTuning = { minGapMs: 3100, backoffMs: 2000, requestTimeoutMs: 40_000, retryWindowMs: 30_000 };
 const PAGE = 200;

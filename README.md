@@ -1,4 +1,4 @@
-# Research Pulse
+# Pulse-AI
 
 Weekly AI/ML research brief, organised by domain. All AI calls use Gemini Flash.
 Components Map: `docs/components-map.png`.

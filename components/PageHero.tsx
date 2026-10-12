@@ -15,7 +15,7 @@ export function PageHero({ title, sub }: { title: string; sub?: string }) {
             <span className="brand-mark" aria-hidden="true">
               <IconPulse />
             </span>
-            Research Pulse
+            Pulse-AI
           </Link>
           <Link href="/" className="ghost-btn">
             ← Back to the brief

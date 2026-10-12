@@ -24,7 +24,7 @@ export const LIMITS = {
 /** A short, one-way identifier for the caller, so raw IP addresses are never stored. */
 export function clientId(headers: Headers): string {
   const ip = (headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || headers.get("x-real-ip") || "unknown";
-  return createHash("sha256").update(`research-pulse:${ip}`).digest("hex").slice(0, 16);
+  return createHash("sha256").update(`pulse-ai:${ip}`).digest("hex").slice(0, 16);
 }
 
 export async function overLimit(limit: Limit, headers: Headers, opts: { kv?: Kv; now?: number } = {}): Promise<boolean> {

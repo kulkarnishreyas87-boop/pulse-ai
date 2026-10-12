@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const brief = await getLatestBrief();
   const s = brief.sections.find((x) => x.domainId === id);
-  return { title: s ? `${s.domainName} · Research Pulse` : "Research Pulse" };
+  return { title: s ? `${s.domainName} · Pulse-AI` : "Pulse-AI" };
 }
 
 /** A domain's page in the latest brief. */
